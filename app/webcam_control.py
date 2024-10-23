@@ -49,7 +49,7 @@ def gen_frames():
 @app.route('/')
 def index():
     global push_btn
-    return render_template('index.html', push_btn=push_btn)
+    return render_template('webcam_control.html', push_btn=push_btn)
 
 
 # 카메라 영상 스트리밍 라우팅
