@@ -1,21 +1,19 @@
-from flask import Flask, render_template, url_for, redirect
+from flask import Flask, render_template, url_for, redirect, session
 
 app = Flask(__name__)
-
-global push_btn
-push_btn = False  # 카메라 On/Off 상태를 저장하는 전역변수
+app.secret_key = 'your_secret_key'  # 세션을 사용하기 위한 비밀키 설정
 
 # 메인 페이지 라우팅
 @app.route('/')
 def index():
-    global push_btn
-    return render_template('webcam_control.html', push_btn=push_btn)
+    if 'push_btn' not in session:
+        session['push_btn'] = False  # 세션에서 카메라 상태가 없으면 초기화
+    return render_template('webcam_control.html', push_btn=session['push_btn'])
 
 # 버튼을 눌렀을 때 카메라 On/Off 상태 변경
 @app.route('/push_switch')
 def push_switch():
-    global push_btn
-    push_btn = not push_btn  # 상태를 토글
+    session['push_btn'] = not session['push_btn']  # 세션에서 상태를 토글
     return redirect(url_for('index'))
 
 # 서버 실행
