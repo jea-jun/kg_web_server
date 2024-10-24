@@ -1,7 +1,8 @@
+import os
 from flask import Flask, render_template, url_for, redirect, session
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # 세션을 사용하기 위한 비밀키 설정
+app.secret_key = os.getenv('SECRET_KEY', 'your_default_secret_key')  # 환경 변수에서 비밀키를 가져옴
 
 # 메인 페이지 라우팅
 @app.route('/')
