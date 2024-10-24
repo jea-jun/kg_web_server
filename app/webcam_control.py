@@ -1,8 +1,10 @@
-import os
 from flask import Flask, render_template, url_for, redirect, session
+from flask_cors import CORS
+import os
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'your_default_secret_key')  # 환경 변수에서 비밀키를 가져옴
+app.secret_key = os.getenv('SECRET_KEY', 'your_default_secret_key')  # 환경 변수에서 비밀키 가져오기
+CORS(app)  # CORS 설정 추가
 
 # 메인 페이지 라우팅
 @app.route('/')
