@@ -1,14 +1,24 @@
 body {
-  font-family: system-ui;
-  background: #f06d06;
-  color: white;
-  text-align: center;
+    font-family: system-ui;
+    background: #f06d06;
+    color: white;
+    text-align: center;
 }
 
 video {
-  width: 80%;
-  height: auto;
-  margin-top: 20px;
-  border: 5px solid grey;
-  border-radius: 500px;
+    width: 80%;
+    height: auto;
+    margin-top: 20px;
+    border: 5px solid grey;
+    border-radius: 10px;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80%;
+    height: auto;
+    border: 5px solid grey;
+    border-radius: 10px;
 }
