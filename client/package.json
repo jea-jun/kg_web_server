@@ -44,6 +44,7 @@
     ]
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "http-proxy-middleware": "^1.0.3"
   }
 }
