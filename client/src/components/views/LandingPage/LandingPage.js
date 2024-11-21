@@ -178,7 +178,7 @@ function LandingPage() {
 
             {Products.length === 0 ?
                 <div style={{ display: 'flex', height: '300px', justifyContent: 'center', alignItems: 'center' }}>
-                    <h2>No post yet...</h2>
+                    <h2>No book yet...</h2>
                 </div> :
                 <div>
                     <Row gutter={[16, 16]}>
