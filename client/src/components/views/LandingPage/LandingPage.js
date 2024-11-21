@@ -144,9 +144,17 @@ function LandingPage() {
     return (
         <div style={{ width: '75%', margin: '3rem auto' }}>
             <div style={{ textAlign: 'center' }}>
-                <h2>  Let's Travel Anywhere  <Icon type="rocket" />  </h2>
+                <h2> 지식의 공간 <Icon type="rocket" />  </h2>
             </div>
 
+            {/* Search  */}
+            <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem auto' }}>
+
+                <SearchFeature
+                    refreshFunction={updateSearchTerms}
+                />
+
+            </div>
 
             {/* Filter  */}
 
@@ -154,26 +162,18 @@ function LandingPage() {
                 <Col lg={12} xs={24} >
                     <CheckBox
                         list={continents}
-                        handleFilters={filters => handleFilters(filters, "continents")}
+                        handleFilters={filters => handleFilters(filters, "category")}
                     />
                 </Col>
                 <Col lg={12} xs={24}>
                     <RadioBox
                         list={price}
-                        handleFilters={filters => handleFilters(filters, "price")}
+                        handleFilters={filters => handleFilters(filters, "conditions")}
                     />
                 </Col>
             </Row>
 
 
-            {/* Search  */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '1rem auto' }}>
-
-                <SearchFeature
-                    refreshFunction={updateSearchTerms}
-                />
-
-            </div>
 
 
             {Products.length === 0 ?
