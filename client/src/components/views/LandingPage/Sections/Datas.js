@@ -1,72 +1,93 @@
 
-const price = [
+const searchCriteria = [
     {
         "_id": 0,
-        "name": "Any",
+        "name": "전체",
         "array": []
     },
     {
         "_id": 1,
-        "name": "$0 to $199",
+        "name": "자료명",
         "array": [0, 199]
     },
     {
         "_id": 2,
-        "name": "$200 to $249",
+        "name": "저자명",
         "array": [200, 249]
     },
     {
         "_id": 3,
-        "name": "$250 to $279",
+        "name": "발행자",
         "array": [250, 279]
     },
     {
         "_id": 4,
-        "name": "$280 to $299",
+        "name": "키워드",
         "array": [280, 299]
     },
     {
         "_id": 5,
-        "name": "More than $300",
+        "name": "목차",
         "array": [300, 1500000]
-    }
+    },
+    {
+        "_id": 5,
+        "name": "청구기호",
+        "array": [300, 1500000]
+    },
 ]
 
 
 
-const continents = [
+const category = [
     {
         "_id": 1,
-        "name": "Africa"
+        "name": "소설"
     },
     {
         "_id": 2,
-        "name": "Europe"
+        "name": "비소설"
     },
     {
         "_id": 3,
-        "name": "Asia"
+        "name": "자기계발"
     },
     {
         "_id": 4,
-        "name": "North America"
+        "name": "예술 및 디자인"
     },
     {
         "_id": 5,
-        "name": "South America"
+        "name": "아동/청소년"
     },
     {
         "_id": 6,
-        "name": "Australia"
+        "name": "교육 및 학습"
     },
     {
         "_id": 7,
-        "name": "Antarctica"
-    }
+        "name": "취미/여가"
+    },
+    {
+        "_id": 8,
+        "name": "전문 서적"
+    },
+    {
+        "_id": 9,
+        "name": "종교 및 영성"
+    },
+    {
+        "_id": 10,
+        "name": "만화/그래픽 노블"
+    },
+    {
+        "_id": 11,
+        "name": "기타"
+    },
 ]
 
 
 export {
-    price,
-    continents
+    searchCriteria,
+    category
 }

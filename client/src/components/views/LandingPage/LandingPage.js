@@ -4,7 +4,7 @@ import { Icon, Col, Card, Row } from 'antd';
 import ImageSlider from '../../utils/ImageSlider';
 import CheckBox from './Sections/CheckBox';
 import RadioBox from './Sections/RadioBox';
-import { continents, price } from './Sections/Datas';
+import { category, searchCriteria } from './Sections/Datas';
 import SearchFeature from './Sections/SearchFeature';
 
 const { Meta } = Card;
@@ -18,8 +18,8 @@ function LandingPage() {
     const [SearchTerms, setSearchTerms] = useState("")
 
     const [Filters, setFilters] = useState({
-        continents: [],
-        price: []
+        category: [],
+        searchCriteria: []
     })
 
     useEffect(() => {
@@ -73,7 +73,7 @@ function LandingPage() {
             >
                 <Meta
                     title={product.title}
-                    description={`$${product.price}`}
+                    description={`$${product.searchCriteria}`}
                 />
             </Card>
         </Col>
@@ -93,8 +93,8 @@ function LandingPage() {
 
     }
 
-    const handlePrice = (value) => {
-        const data = price;
+    const handlesearchCriteria = (value) => {
+        const data = searchCriteria;
         let array = [];
 
         for (let key in data) {
@@ -113,9 +113,9 @@ function LandingPage() {
 
         newFilters[category] = filters
 
-        if (category === "price") {
-            let priceValues = handlePrice(filters)
-            newFilters[category] = priceValues
+        if (category === "searchCriteria") {
+            let searchCriteriaValues = handlesearchCriteria(filters)
+            newFilters[category] = searchCriteriaValues
 
         }
 
@@ -147,6 +147,23 @@ function LandingPage() {
                 <h2> 지식의 공간 <Icon type="rocket" />  </h2>
             </div>
 
+            {/* Filter  */}
+
+            <Row gutter={[16, 16]}>
+                <Col lg={12} xs={24} >
+                    <CheckBox
+                        list={category}
+                        handleFilters={filters => handleFilters(filters, "category")}
+                    />
+                </Col>
+                <Col lg={12} xs={24}>
+                    <RadioBox
+                        list={searchCriteria}
+                        handleFilters={filters => handleFilters(filters, "searchCriteria")}
+                    />
+                </Col>
+            </Row>
+            
             {/* Search  */}
             <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem auto' }}>
 
@@ -156,22 +173,6 @@ function LandingPage() {
 
             </div>
 
-            {/* Filter  */}
-
-            <Row gutter={[16, 16]}>
-                <Col lg={12} xs={24} >
-                    <CheckBox
-                        list={continents}
-                        handleFilters={filters => handleFilters(filters, "category")}
-                    />
-                </Col>
-                <Col lg={12} xs={24}>
-                    <RadioBox
-                        list={price}
-                        handleFilters={filters => handleFilters(filters, "conditions")}
-                    />
-                </Col>
-            </Row>
 
 
 
