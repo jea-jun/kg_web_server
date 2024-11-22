@@ -37,8 +37,8 @@ function LandingPage() {
         // GET 요청 시에는 params로 쿼리 파라미터를 전달
         Axios.get('/api/book/getBooks', { params: variables })
             .then(response => {
-                // 서버에서 데이터를 받아오는 로직
                 console.log("Received Data:", response.data); // 받아온 데이터 출력
+                setProducts(response.data.products || []); // 받아온 데이터를 상태로 설정
             })
             .catch(error => {
                 console.error("API 요청 오류:", error.message || error); // 오류 로그 출력
@@ -67,11 +67,11 @@ function LandingPage() {
         return <Col lg={6} md={8} xs={24}>
             <Card
                 hoverable={true}
-                cover={<a href={`/product/${product._id}`} > <ImageSlider images={product.images} /></a>}
+                cover={<a href={`/product/${product.controlNumber}`}>{product.title}</a>}
             >
                 <Meta
-                    title={product.title}
-                    description={`$${product.decadeRanges}`}
+                    contents={product.contents}
+                    description={`$${product.publishYear}`}
                 />
             </Card>
         </Col>
