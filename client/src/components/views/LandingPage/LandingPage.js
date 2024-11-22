@@ -144,6 +144,7 @@ function LandingPage() {
             // filters: Filters,
             search: newSearchTerm
         }
+        console.log(newSearchTerm)
 
         setSkip(0)
         setSearchTerms(newSearchTerm)
