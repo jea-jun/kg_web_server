@@ -66,7 +66,7 @@ function LandingPage() {
 
 
     const renderCards = Products.map((product, index) => {
-
+        if (!product) return null;
         return <Col lg={6} md={8} xs={24}>
             <Card
                 hoverable={true}
