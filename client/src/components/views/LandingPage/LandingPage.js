@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import Axios from 'axios';
 import { Icon, Col, Card, Row } from 'antd';
-import ImageSlider from '../../utils/ImageSlider';
 import CheckBox from './Sections/CheckBox';
 import RadioBox from './Sections/RadioBox';
 import { category, decadeRanges } from './Sections/Datas';
 import SearchFeature from './Sections/SearchFeature';
+import './LandingPage.css';
 
 const { Meta } = Card;
 
@@ -101,18 +101,32 @@ function LandingPage() {
         setSkip(skip)
     }
 
-
     const handleCardClick = (index) => {
-        setSelectedCard(index === selectedCard ? null : index); // 이미 클릭된 카드라면 선택 해제, 그렇지 않으면 선택
+        setSelectedCard(index);
+        console.log(`Card ${index} clicked`); // 클릭한 카드의 인덱스를 로깅
+        setIsTimePickerVisible(true); // 시간 선택 창을 보이도록 설정
+    };
+
+    const handleDateChange = (e) => {
+        setSelectedDateTime({ ...selectedDateTime, date: e.target.value });
+    };
+
+    const handleTimeChange = (e) => {
+        setSelectedDateTime({ ...selectedDateTime, time: e.target.value });
+    };
+
+    const handleReservation = () => {
+        alert(`Reservation confirmed for ${selectedDateTime.date} at ${selectedDateTime.time}`);
+        setIsTimePickerVisible(false);
     };
 
     const renderCards = Products.map((product, index) => {
         return <Col key={index} lg={6} md={8} xs={24}>
         <Card
-            cover={<div>{index}</div>}
-            className={selectedCard === index ? 'card-enlarged' : ''} 
+            className={selectedCard === index ? 'card-selected' : ''}
             hoverable={true}
             onClick={() => handleCardClick(index)}
+            cover={<div>{index}</div>}
         >
             <Meta
                 title={product.title}
