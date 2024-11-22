@@ -127,7 +127,6 @@ function LandingPage() {
     }
 
     const updateSearchTerms = (newSearchTerm) => {
-        console.log(newSearchTerm);
 
         const variables = {
             pageno: 1,
