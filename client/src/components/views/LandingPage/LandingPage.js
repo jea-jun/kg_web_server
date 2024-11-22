@@ -11,14 +11,13 @@ import './Sections/LandingPage.css';
 const { Meta } = Card;
 
 function LandingPage() {
-
-
     const [Products, setProducts] = useState([])
     const [Skip, setSkip] = useState(0)
     const [Limit, setLimit] = useState(8)
     const [PostSize, setPostSize] = useState()
     const [SearchTerms, setSearchTerms] = useState("")
     const [selectedCard, setSelectedCard] = useState(null);
+    const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
 
     const [Filters, setFilters] = useState({
         category: [],
@@ -102,7 +101,7 @@ function LandingPage() {
         getProducts(variables)
         setSkip(skip)
     }
-    
+
     const renderCards = Products.map((product, index) => {
         return <Col key={index} lg={6} md={8} xs={24}>
         <Card
