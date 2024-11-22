@@ -37,61 +37,37 @@ function LandingPage() {
         // GET 요청 시에는 params로 쿼리 파라미터를 전달
         Axios.get('/api/book/getBooks', { params: variables })
             .then(response => {
-                // 서버에서 데이터를 받아오는 로직
-                console.log("Received Data:", response.data); // 받아온 데이터 출력
-    
-                // XML 데이터 추출
-                let xmlData = response.data.data;
-    
-                // XML 데이터가 문자열일 때만 replace 수행
-                if (typeof xmlData === 'string') {
-                    xmlData = xmlData.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-                } else {
-                    console.error("Received data is not a valid XML string:", response.data);
-                    return;
-                }
-    
-                if (xmlData.startsWith('<?xml')) {
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(xmlData, "application/xml");
-    
-                    // XML 파싱 오류 검사
-                    if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
-                        console.error("XML Parsing Error:", xmlDoc.getElementsByTagName("parsererror")[0].textContent);
-                        return;
-                    }
-    
-                    const records = xmlDoc.getElementsByTagName("recode");
-                    const products = Array.from(records).map(record => {
-                        const items = record.getElementsByTagName("item");
-                        const getValueByName = (name) => {
-                            for (let i = 0; i < items.length; i++) {
-                                if (items[i].getElementsByTagName("name")[0].textContent === name) {
-                                    return items[i].getElementsByTagName("value")[0].textContent;
-                                }
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(response.data.data, "application/xml");
+
+                const records = xmlDoc.getElementsByTagName("recode");
+                const products = Array.from(records).map(record => {
+                    const items = record.getElementsByTagName("item");
+                    const getValueByName = (name) => {
+                        for (let i = 0; i < items.length; i++) {
+                            const nameElement = items[i].getElementsByTagName("name")[0];
+                            if (nameElement && nameElement.textContent === name) {
+                                return items[i].getElementsByTagName("value")[0]?.textContent || '';
                             }
-                            return '';
-                        };
-                        return {
-                            controlNumber: getValueByName("제어번호"),
-                            title: getValueByName("기사명"),
-                            author: getValueByName("저자명"),
-                            contents: getValueByName("목차"),
-                            publishYear: getValueByName("발행년도")
-                        };
-                    });
-                    console.log("Parsed Products:", products); // 파싱된 제품 데이터 출력
-                    setProducts(products || []); // 받아온 데이터를 상태로 설정
-                    console.log("Updated Products State:", products); // 상태 업데이트 이후 데이터 출력
-                } else {
-                    console.error("Received data is not valid XML:", response.data);
-                }
+                        }
+                        return '';
+                    };
+                    return {
+                        controlNumber: getValueByName("제어번호"),
+                        title: getValueByName("저널명"),
+                        author: getValueByName("저자명"),
+                        contents: getValueByName("목차"),
+                        publishYear: getValueByName("제공년도")
+                    };
+                });
+                setProducts(products || []);
             })
             .catch(error => {
                 console.error("API 요청 오류:", error.message || error); // 오류 로그 출력
                 alert('An error occurred while fetching data. Please try again later.');
             });
     };
+    
     
     const onLoadMore = () => {
         let skip = Skip + Limit;
