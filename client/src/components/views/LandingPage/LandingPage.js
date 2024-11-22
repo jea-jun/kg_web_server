@@ -25,8 +25,8 @@ function LandingPage() {
     useEffect(() => {
 
         const variables = {
-            skip: Skip,
-            limit: Limit,
+            pageno: Skip,
+            displaylines: Limit,
         }
 
         getProducts(variables)
@@ -34,8 +34,8 @@ function LandingPage() {
     }, [])
 
     const getProducts = (variables) => {
-        Axios.post('/api/product/getProducts', variables)
-        // Axios.post('/api/book/getBooks', variables)
+        // Axios.post('/api/product/getProducts', variables)
+        Axios.post('/api/book/getBooks', variables)
             .then(response => {
                 if (response.data.success) {
                     if (variables.loadMore) {
@@ -127,12 +127,13 @@ function LandingPage() {
     }
 
     const updateSearchTerms = (newSearchTerm) => {
+        console.log(newSearchTerm);
 
         const variables = {
-            skip: 0,
-            limit: Limit,
-            filters: Filters,
-            searchTerm: newSearchTerm
+            pageno: 1,
+            displaylines: 4,
+            // filters: Filters,
+            search: newSearchTerm
         }
 
         setSkip(0)
