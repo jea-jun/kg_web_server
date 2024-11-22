@@ -132,7 +132,6 @@ function LandingPage() {
             pageno: 1,
             displaylines: 4,
             // filters: Filters,
-            option: "발행년도,2000",
             search: newSearchTerm
         }
 
