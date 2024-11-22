@@ -37,7 +37,6 @@ router.get('/getBooks', async (req, res) => {
       error: error.response ? error.response.data : "Internal Server Error",
     });
   }
-  console.log(response.data);
 });
 
 module.exports = router;
