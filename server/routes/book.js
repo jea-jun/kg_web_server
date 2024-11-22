@@ -3,6 +3,16 @@ const router = express.Router();
 const axios = require("axios");
 const config = require("../config/key"); // 키 파일에서 API 키 가져오기
 
+// 미들웨어를 사용하여 요청 로깅
+router.use((req, res, next) => {
+    console.log("Incoming Request:");
+    console.log("Method:", req.method); // 요청 메서드 (GET, POST 등)
+    console.log("URL:", req.originalUrl); // 요청 URL
+    console.log("Query Parameters:", req.query); // 요청 쿼리 파라미터
+    console.log("Body:", req.body); // 요청 바디 (POST 요청 시 유용)
+    next(); // 다음 핸들러로 전달
+});
+
 // 책 검색 엔드포인트
 router.get("/getBooks", async (req, res) => {
     const { search, pageno = 1, displaylines = 10 } = req.query; // 클라이언트 요청 쿼리 파라미터
@@ -20,21 +30,21 @@ router.get("/getBooks", async (req, res) => {
 
         // API 호출 성공 시 응답 데이터 처리
         if (response.data.resultCode === "00") {
+            console.log("API Call Success:", response.data); // API 성공 응답 로깅
             res.status(200).json({
                 success: true,
                 total: response.data.total,       // 총 검색 결과 수
                 items: response.data.record.item // 검색된 항목 목록
             });
         } else {
-            // API에서 오류 반환 시 처리
+            console.log("API Call Error:", response.data.resultMsg); // API 오류 응답 로깅
             res.status(400).json({
                 success: false,
                 message: `API Error: ${response.data.resultMsg}`
             });
         }
     } catch (error) {
-        // API 호출 실패 시 처리
-        console.error("API 호출 실패:", error.message);
+        console.error("API 호출 실패:", error.message); // API 호출 실패 로깅
         res.status(500).json({
             success: false,
             message: "Failed to fetch data from National Library API"
@@ -43,9 +53,3 @@ router.get("/getBooks", async (req, res) => {
 });
 
 module.exports = router;
-
-// skip: Skip,                   //건너뛸 개수
-// limit: Limit,                 //한 번에 가져올 상품 개수 
-// loadMore: true,                //더 많은 데이터를 불러올지 여부
-// filters: Filters,              //서버에서 데이터를 필터링하기 위해 사용되는
-// searchTerm: SearchTerms        //사용자가 입력한 검색어를 서버에 전달하여 검색 결과
