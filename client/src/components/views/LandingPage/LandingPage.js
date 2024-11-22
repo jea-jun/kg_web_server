@@ -18,6 +18,7 @@ function LandingPage() {
     const [SearchTerms, setSearchTerms] = useState("")
     const [selectedCard, setSelectedCard] = useState(null);
     const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
+    const [selectedDateTime, setSelectedDateTime] = useState({ date: '', time: '' });
 
     const [Filters, setFilters] = useState({
         category: [],
