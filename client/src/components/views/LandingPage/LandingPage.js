@@ -5,7 +5,7 @@ import CheckBox from './Sections/CheckBox';
 import RadioBox from './Sections/RadioBox';
 import { category, decadeRanges } from './Sections/Datas';
 import SearchFeature from './Sections/SearchFeature';
-import './LandingPage.css';
+import './Sections/LandingPage.css';
 
 const { Meta } = Card;
 
