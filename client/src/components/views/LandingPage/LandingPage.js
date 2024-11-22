@@ -66,19 +66,18 @@ function LandingPage() {
                         const items = record.getElementsByTagName("item");
                         const getValueByName = (name) => {
                             for (let i = 0; i < items.length; i++) {
-                                const nameElement = items[i].getElementsByTagName("name")[0];
-                                if (nameElement && nameElement.textContent === name) {
-                                    return items[i].getElementsByTagName("value")[0]?.textContent || '';
+                                if (items[i].getElementsByTagName("name")[0].textContent === name) {
+                                    return items[i].getElementsByTagName("value")[0].textContent;
                                 }
                             }
                             return '';
                         };
                         return {
                             controlNumber: getValueByName("제어번호"),
-                            title: getValueByName("저널명"), // XML 데이터에 맞게 수정
+                            title: getValueByName("기사명"),
                             author: getValueByName("저자명"),
-                            contents: getValueByName("목차"), // 이 항목은 XML에 없으므로 빈 값일 가능성이 큼
-                            publishYear: getValueByName("제공년도") // XML 데이터에 맞게 수정
+                            contents: getValueByName("목차"),
+                            publishYear: getValueByName("발행년도")
                         };
                     });
                     console.log("Parsed Products:", products); // 파싱된 제품 데이터 출력
@@ -93,7 +92,6 @@ function LandingPage() {
                 alert('An error occurred while fetching data. Please try again later.');
             });
     };
-    
     
     const onLoadMore = () => {
         let skip = Skip + Limit;
