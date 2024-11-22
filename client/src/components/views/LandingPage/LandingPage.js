@@ -107,7 +107,7 @@ function LandingPage() {
         <Card
             className={selectedCard === index ? 'card-selected' : ''}
             hoverable={true}
-            onClick={() => handleCardClick(index)}
+            onClick={() => handleCardClick(index, setSelectedCard, setIsTimePickerVisible)}
             cover={<div>{index}</div>}
         >
             <Meta
