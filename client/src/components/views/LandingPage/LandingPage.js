@@ -60,13 +60,15 @@ function LandingPage() {
                         publishYear: getValueByName("발행년도")
                     };
                 });
+                console.log("Parsed Products:", products); // 파싱된 제품 데이터 출력
                 setProducts(products || []); // 받아온 데이터를 상태로 설정
+                console.log("Updated Products State:", products); // 상태 업데이트 이후 데이터 출력
             })
             .catch(error => {
                 console.error("API 요청 오류:", error.message || error); // 오류 로그 출력
                 alert('An error occurred while fetching data. Please try again later.');
             });
-    };
+    };   
     
     
     const onLoadMore = () => {
