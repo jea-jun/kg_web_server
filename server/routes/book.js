@@ -5,7 +5,7 @@ const { libraryApiKey } = require("../config/key");
 
 // API 요청 라우트
 router.get('/getBooks', async (req, res) => {
-  const url = "http://apis.data.go.kr/9720000/searchservice/detail"; // API URL
+  const url = "http://apis.data.go.kr/9720000/searchservice/basic"; // API URL
   
   // 클라이언트에서 전달된 쿼리 파라미터 추출
   const { option, pageno, displaylines, search } = req.query;
