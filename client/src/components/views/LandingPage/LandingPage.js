@@ -139,7 +139,6 @@ function LandingPage() {
         setSearchTerms(newSearchTerm)
 
         getProducts(variables)
-        console.log(varables);
     }
 
 
