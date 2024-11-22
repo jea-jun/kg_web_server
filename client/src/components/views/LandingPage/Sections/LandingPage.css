@@ -1,8 +1,15 @@
 .card-selected {
-    transform: scale(2); /* 클릭된 카드 살짝 확대 */
+    position: fixed; /* 화면 기준으로 위치를 고정 */
+    top: 50%; /* 화면의 세로 중앙 */
+    left: 50%; /* 화면의 가로 중앙 */
+    transform: translate(-50%, -50%) scale(1.5); /* 중앙 정렬 및 확대 */
     transition: transform 0.3s ease-in-out;
-    z-index: 1; /* 카드가 확대될 때 다른 카드 위에 보이도록 설정 */
+    z-index: 1000; /* 다른 요소 위에 보이도록 설정 */
+    background: white; /* 선택된 카드가 더 잘 보이도록 배경색 추가 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 약간의 그림자 */
+    border-radius: 8px; /* 카드의 모서리를 부드럽게 */
 }
+
 
 .time-picker-panel {
     position: fixed;
@@ -10,7 +17,7 @@
     right: 0;
     width: 300px;
     height: 100vh;
-    background: #f0f0f0;
+    background: #007bff;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
     padding: 20px;
     transition: transform 0.3s ease-in-out;
@@ -23,7 +30,7 @@
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    background: #f9f9f9;
+    background: #007bff;
 }
 
 .date-input,
@@ -48,4 +55,15 @@
 .card-selected {
     border: 2px solid #007bff;
     transition: 0.3s;
+}
+.time-picker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #007bff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    z-index: 1000;
 }

@@ -115,7 +115,7 @@ function LandingPage() {
                         e.stopPropagation(); // 이벤트 버블링 방지
                         handleCardClick(index, setSelectedCard, setIsTimePickerVisible);
                     }}
-                    cover={<div>{index}</div>}
+                    cover={<div>{product.controlNumber}</div>}
                 >
                     <Meta
                         title={product.title}
@@ -123,7 +123,6 @@ function LandingPage() {
                             <div>
                                 <p>Author: {product.author}</p>
                                 <p>Year: {product.publishYear}</p>
-                                <p>Control Number: {product.controlNumber}</p>
                                 <p>Contents: {product.contents}</p>
                             </div>
                         }
