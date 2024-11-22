@@ -142,7 +142,10 @@ function LandingPage() {
         const variables = {
             pageno: 1,
             displaylines: 4,
-            search: Filters.category,newSearchTerm
+            search: {
+                category: Filters.category,
+                term: newSearchTerm
+            }
         }
         console.log(newSearchTerm)
 
@@ -159,22 +162,6 @@ function LandingPage() {
                 <h2> 지식의 공간 <Icon type="rocket" />  </h2>
             </div>
 
-            {/* Filter  */}
-
-            <Row gutter={[16, 16]}>
-                <Col lg={12} xs={24} >
-                    <CheckBox
-                        list={category}
-                        handleFilters={filters => handleFilters(filters, "category")}
-                    />
-                </Col>
-                <Col lg={12} xs={24}>
-                    <RadioBox
-                        list={decadeRanges}
-                        handleFilters={filters => handleFilters(filters, "decadeRanges")}
-                    />
-                </Col>
-            </Row>
             
             {/* Search  */}
             <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem auto' }}>
@@ -186,6 +173,23 @@ function LandingPage() {
             </div>
 
 
+            {/* Filter  */}
+            <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem auto' }}>
+                <Row gutter={[16, 16]}>
+                    <Col lg={12} xs={24} >
+                        <CheckBox
+                            list={category}
+                            handleFilters={filters => handleFilters(filters, "category")}
+                        />
+                    </Col>
+                    <Col lg={12} xs={24}>
+                        <RadioBox
+                            list={decadeRanges}
+                            handleFilters={filters => handleFilters(filters, "decadeRanges")}
+                        />
+                    </Col>
+                </Row>
+            </div>
 
 
 
