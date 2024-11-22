@@ -37,21 +37,8 @@ function LandingPage() {
         // GET 요청 시에는 params로 쿼리 파라미터를 전달
         Axios.get('/api/book/getBooks', { params: variables })
             .then(response => {
-                if (response.data.success) {
-                    const newProducts = response.data.products || []; // products가 없을 경우 빈 배열 설정
-                    const newPostSize = response.data.postSize || 0; // postSize 기본값 설정
-                    
-                    if (variables.loadMore) {
-                        setProducts([...Products, ...newProducts]); // 기존 데이터에 추가
-                    } else {
-                        setProducts(newProducts); // 새 데이터로 교체
-                    }
-                    
-                    setPostSize(newPostSize); // postSize 상태 업데이트
-                } else {
-                    console.error('API Error: Failed to fetch product data');
-                    alert('Failed to fetch product data');
-                }
+                // 서버에서 데이터를 받아오는 로직
+                console.log("Received Data:", response.data); // 받아온 데이터 출력
             })
             .catch(error => {
                 console.error("API 요청 오류:", error.message || error); // 오류 로그 출력
