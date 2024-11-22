@@ -5,11 +5,13 @@ import CheckBox from './Sections/CheckBox';
 import RadioBox from './Sections/RadioBox';
 import { category, decadeRanges } from './Sections/Datas';
 import SearchFeature from './Sections/SearchFeature';
+import { handleCardClick, handleDateChange, handleTimeChange, handleReservation } from './Sections/ReservationButton';
 import './Sections/LandingPage.css';
 
 const { Meta } = Card;
 
 function LandingPage() {
+
 
     const [Products, setProducts] = useState([])
     const [Skip, setSkip] = useState(0)
@@ -100,26 +102,7 @@ function LandingPage() {
         getProducts(variables)
         setSkip(skip)
     }
-
-    const handleCardClick = (index) => {
-        setSelectedCard(index);
-        console.log(`Card ${index} clicked`); // 클릭한 카드의 인덱스를 로깅
-        setIsTimePickerVisible(true); // 시간 선택 창을 보이도록 설정
-    };
-
-    const handleDateChange = (e) => {
-        setSelectedDateTime({ ...selectedDateTime, date: e.target.value });
-    };
-
-    const handleTimeChange = (e) => {
-        setSelectedDateTime({ ...selectedDateTime, time: e.target.value });
-    };
-
-    const handleReservation = () => {
-        alert(`Reservation confirmed for ${selectedDateTime.date} at ${selectedDateTime.time}`);
-        setIsTimePickerVisible(false);
-    };
-
+    
     const renderCards = Products.map((product, index) => {
         return <Col key={index} lg={6} md={8} xs={24}>
         <Card
