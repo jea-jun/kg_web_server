@@ -4,7 +4,7 @@ import { Icon, Col, Card, Row } from 'antd';
 import ImageSlider from '../../utils/ImageSlider';
 import CheckBox from './Sections/CheckBox';
 import RadioBox from './Sections/RadioBox';
-import { category, decadeRange } from './Sections/Datas';
+import { category, decadeRanges } from './Sections/Datas';
 import SearchFeature from './Sections/SearchFeature';
 
 const { Meta } = Card;
@@ -19,7 +19,7 @@ function LandingPage() {
 
     const [Filters, setFilters] = useState({
         category: [],
-        decadeRange: []
+        decadeRanges: []
     })
 
     useEffect(() => {
@@ -74,7 +74,7 @@ function LandingPage() {
             >
                 <Meta
                     title={product.title}
-                    description={`$${product.decadeRange}`}
+                    description={`$${product.decadeRanges}`}
                 />
             </Card>
         </Col>
@@ -94,8 +94,8 @@ function LandingPage() {
 
     }
 
-    const handledecadeRange = (value) => {
-        const data = decadeRange;
+    const handledecadeRanges = (value) => {
+        const data = decadeRanges;
         let array = [];
 
         for (let key in data) {
@@ -114,9 +114,9 @@ function LandingPage() {
 
         newFilters[category] = filters
 
-        if (category === "decadeRange") {
-            let decadeRangeValues = handledecadeRange(filters)
-            newFilters[category] = decadeRangeValues
+        if (category === "decadeRanges") {
+            let decadeRangesValues = handledecadeRanges(filters)
+            newFilters[category] = decadeRangesValues
 
         }
 
@@ -160,8 +160,8 @@ function LandingPage() {
                 </Col>
                 <Col lg={12} xs={24}>
                     <RadioBox
-                        list={decadeRange}
-                        handleFilters={filters => handleFilters(filters, "decadeRange")}
+                        list={decadeRanges}
+                        handleFilters={filters => handleFilters(filters, "decadeRanges")}
                     />
                 </Col>
             </Row>
