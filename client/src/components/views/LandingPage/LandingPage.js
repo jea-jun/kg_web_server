@@ -106,6 +106,19 @@ function LandingPage() {
         setSkip(skip)
     }
 
+    const handleReservation = (selectedDateTime, setIsTimePickerVisible) => {
+        alert(`Reservation confirmed for ${selectedDateTime.date} at ${selectedDateTime.time}`);
+        setIsTimePickerVisible(false);
+        setSelectedDateTime({ date: '', time: '' }); // 선택된 날짜와 시간을 초기화
+    };
+    
+    // 외부 클릭 감지 핸들러
+    const handleOutsideClick = (e) => {
+        if (!e.target.closest('.card')) {
+            setSelectedCard(null); // 외부를 클릭하면 선택 해제
+        }
+    };
+
     const renderCards = Products.map((product, index) => {
         return (
             <Col key={index} lg={6} md={8} xs={24}>
