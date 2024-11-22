@@ -57,7 +57,6 @@ function LandingPage() {
                 console.error("API 요청 오류:", error.message || error); // 오류 로그 출력
                 alert('An error occurred while fetching data. Please try again later.');
             });
-        console.log("함수 호출 성공!")
     };
     
     
@@ -142,10 +141,7 @@ function LandingPage() {
         const variables = {
             pageno: 1,
             displaylines: 4,
-            search: {
-                category: Filters.category,
-                term: newSearchTerm
-            }
+            search: `${Filters.category.join(',')},${newSearchTerm}`.replace(/'/g, '')  
         }
         console.log(newSearchTerm)
 
