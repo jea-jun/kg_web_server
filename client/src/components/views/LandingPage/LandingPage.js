@@ -137,11 +137,12 @@ function LandingPage() {
     }
 
     const updateSearchTerms = (newSearchTerm) => {
+        const categoryNames = Filters.category.map(id => category[id]?.name).filter(name => name);
 
         const variables = {
             pageno: 1,
             displaylines: 4,
-            search: `${Filters.category.join(',')},${newSearchTerm}`.replace(/'/g, '')  
+            search: `${categoryNames.join(',')}${categoryNames.length > 0 && newSearchTerm ? ',' : ''}${newSearchTerm}` 
         }
         console.log(newSearchTerm)
 
