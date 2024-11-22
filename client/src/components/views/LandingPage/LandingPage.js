@@ -16,6 +16,7 @@ function LandingPage() {
     const [Limit, setLimit] = useState(8)
     const [PostSize, setPostSize] = useState()
     const [SearchTerms, setSearchTerms] = useState("")
+    const [selectedCard, setSelectedCard] = useState(null);
 
     const [Filters, setFilters] = useState({
         category: [],
@@ -101,11 +102,17 @@ function LandingPage() {
     }
 
 
+    const handleCardClick = (index) => {
+        setSelectedCard(index === selectedCard ? null : index); // 이미 클릭된 카드라면 선택 해제, 그렇지 않으면 선택
+    };
+
     const renderCards = Products.map((product, index) => {
         return <Col key={index} lg={6} md={8} xs={24}>
         <Card
-            hoverable={true}
             cover={<div>{index}</div>}
+            className={selectedCard === index ? 'card-enlarged' : ''} 
+            hoverable={true}
+            onClick={() => handleCardClick(index)}
         >
             <Meta
                 title={product.title}
