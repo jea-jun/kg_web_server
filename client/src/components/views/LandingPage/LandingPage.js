@@ -60,7 +60,7 @@ function LandingPage() {
                             };
                             return {
                                 controlNumber: getValueByName("제어번호"),
-                                title: getValueByName("저널명"),
+                                title: getValueByName("자료명"),
                                 author: getValueByName("저자명"),
                                 contents: getValueByName("목차"),
                                 publishYear: getValueByName("제공년도")
