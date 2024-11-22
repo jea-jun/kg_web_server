@@ -137,14 +137,17 @@ function LandingPage() {
     }
 
     const updateSearchTerms = (newSearchTerm) => {
-        const categoryNames = Filters.category.map(id => category[id]?.name).filter(name => name);
+        const categoryNames = Filters.category.map(id => {
+        const categoryItem = category[id]; // category 배열에서 id로 항목 찾기
+        return categoryItem && categoryItem.name; // categoryItem이 있으면 name 반환
+        }).filter(name => name); // 유효한 name 값만 필터링
+
 
         const variables = {
             pageno: 1,
             displaylines: 4,
-            search: `${categoryNames.join(',')}${categoryNames.length > 0 && newSearchTerm ? ',' : ''}${newSearchTerm}` 
+            search: `${category[Filters.category].name || ''}${newSearchTerm ? ',' + newSearchTerm : ''}`
         }
-        console.log(newSearchTerm)
 
         setSkip(0)
         setSearchTerms(newSearchTerm)
