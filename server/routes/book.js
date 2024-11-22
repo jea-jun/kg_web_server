@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const config = require("../config/key");
+const { libraryApiKey } = require("../config/prod");
 
 // API 요청 라우트
 router.get('/getBooks', async (req, res) => {
@@ -14,7 +15,7 @@ router.get('/getBooks', async (req, res) => {
   const params = {
     serviceKey: config.libraryApiKey, // URL 인코딩된 인증키
   };
-  
+
   // 클라이언트 요청에 따라 동적으로 추가
   if (pageno) params.pageno = pageno;          // 페이지 번호
   if (displaylines) params.displaylines = displaylines; // 페이지당 항목 수
@@ -36,6 +37,6 @@ router.get('/getBooks', async (req, res) => {
     });
   }
 });
-
+console.log(libraryApiKey);
 module.exports = router;
 
