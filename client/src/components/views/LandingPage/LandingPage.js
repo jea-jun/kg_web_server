@@ -107,8 +107,14 @@ function LandingPage() {
             cover={<div>{product.title}</div>}
         >
             <Meta
-                title={product.title}
-                description={`Author: ${product.author}, Year: ${product.publishYear}`}
+                description={
+                    <div>
+                        <p>Author: {product.author}</p>
+                        <p>Year: {product.publishYear}</p>
+                        <p>Control Number: {product.controlNumber}</p>
+                        <p>Contents: {product.contents}</p>
+                    </div>
+                }
             />
         </Card>
     </Col>
@@ -164,7 +170,7 @@ function LandingPage() {
 
         const variables = {
             pageno: 1,
-            displaylines: 4,
+            displaylines: 12,
             search: `${category[Filters.category].name}, ${newSearchTerm}`
 
         }
