@@ -34,21 +34,31 @@ function LandingPage() {
     }, [])
 
     const getProducts = (variables) => {
-        // Axios.post('/api/product/getProducts', variables)
-        Axios.get('/api/book/getBooks', variables)
+        // GET 요청 시에는 params로 쿼리 파라미터를 전달
+        Axios.get('/api/book/getBooks', { params: variables })
             .then(response => {
                 if (response.data.success) {
+                    const newProducts = response.data.products || []; // products가 없을 경우 빈 배열 설정
+                    const newPostSize = response.data.postSize || 0; // postSize 기본값 설정
+                    
                     if (variables.loadMore) {
-                        setProducts([...Products, ...response.data.products])
+                        setProducts([...Products, ...newProducts]); // 기존 데이터에 추가
                     } else {
-                        setProducts(response.data.products)
+                        setProducts(newProducts); // 새 데이터로 교체
                     }
-                    setPostSize(response.data.postSize)
+                    
+                    setPostSize(newPostSize); // postSize 상태 업데이트
                 } else {
-                    alert('Failed to fectch product datas')
+                    console.error('API Error: Failed to fetch product data');
+                    alert('Failed to fetch product data');
                 }
             })
-    }
+            .catch(error => {
+                console.error("API 요청 오류:", error.message || error); // 오류 로그 출력
+                alert('An error occurred while fetching data. Please try again later.');
+            });
+    };
+    
     
     const onLoadMore = () => {
         let skip = Skip + Limit;
