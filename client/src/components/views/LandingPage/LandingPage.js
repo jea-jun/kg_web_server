@@ -37,12 +37,23 @@ function LandingPage() {
         // GET 요청 시에는 params로 쿼리 파라미터를 전달
         Axios.get('/api/book/getBooks', { params: variables })
             .then(response => {
-                let xmlData = response.data.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                // 서버에서 데이터를 받아오는 로직
+                console.log("Received Data:", response.data); // 받아온 데이터 출력
     
-                if (typeof xmlData === "string" && xmlData.startsWith('<?xml')) {
+                let xmlData = response.data;
+    
+                // XML 데이터가 문자열일 때만 replace 수행
+                if (typeof xmlData === 'string') {
+                    xmlData = xmlData.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                } else {
+                    console.error("Received data is not a string:", response.data);
+                    return;
+                }
+    
+                if (xmlData.startsWith('<?xml')) {
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(xmlData, "application/xml");
-                    
+    
                     // XML 파싱 오류 검사
                     if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
                         console.error("XML Parsing Error:", xmlDoc.getElementsByTagName("parsererror")[0].textContent);
@@ -80,6 +91,7 @@ function LandingPage() {
                 alert('An error occurred while fetching data. Please try again later.');
             });
     };
+    
     
     
     
