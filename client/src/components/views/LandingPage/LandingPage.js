@@ -37,7 +37,7 @@ function LandingPage() {
         // GET 요청 시에는 params로 쿼리 파라미터를 전달
         Axios.get('/api/book/getBooks', { params: variables })
             .then(response => {
-                // console.log("Received Data:", response.data); // 받아온 데이터 출력
+                console.log("Received Data:", response.data); // 받아온 데이터 출력
                 setProducts(response.data.products || []); // 받아온 데이터를 상태로 설정
             })
             .catch(error => {
@@ -63,7 +63,6 @@ function LandingPage() {
 
 
     const renderCards = Products.map((product, index) => {
-        if (!product) return null;
         console.log(product.title)
         return <Col key={index} lg={6} md={8} xs={24}>
         <Card
