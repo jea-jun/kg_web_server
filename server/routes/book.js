@@ -23,7 +23,6 @@ router.get('/getBooks', async (req, res) => {
   try {
     // GET 요청 전송
     const response = await axios.get(url, { params });
-    console.log(params);
 
     // 요청 성공: 결과 반환
     res.status(200).json({
@@ -38,8 +37,6 @@ router.get('/getBooks', async (req, res) => {
       error: error.response ? error.response.data : "Internal Server Error",
     });
   }
-  console.log(response.data);
-
 });
 
 module.exports = router;
