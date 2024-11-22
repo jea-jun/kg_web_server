@@ -4,7 +4,7 @@ import { Icon, Col, Card, Row } from 'antd';
 import ImageSlider from '../../utils/ImageSlider';
 import CheckBox from './Sections/CheckBox';
 import RadioBox from './Sections/RadioBox';
-import { category, searchCriteria } from './Sections/Datas';
+import { category, decadeRange } from './Sections/Datas';
 import SearchFeature from './Sections/SearchFeature';
 
 const { Meta } = Card;
@@ -19,7 +19,7 @@ function LandingPage() {
 
     const [Filters, setFilters] = useState({
         category: [],
-        searchCriteria: []
+        decadeRange: []
     })
 
     useEffect(() => {
@@ -35,7 +35,7 @@ function LandingPage() {
 
     const getProducts = (variables) => {
         // Axios.post('/api/product/getProducts', variables)
-        Axios.post('/api/book/getBooks', variables)
+        Axios.get('/api/book/getBooks', variables)
             .then(response => {
                 if (response.data.success) {
                     if (variables.loadMore) {
@@ -74,7 +74,7 @@ function LandingPage() {
             >
                 <Meta
                     title={product.title}
-                    description={`$${product.searchCriteria}`}
+                    description={`$${product.decadeRange}`}
                 />
             </Card>
         </Col>
@@ -94,8 +94,8 @@ function LandingPage() {
 
     }
 
-    const handlesearchCriteria = (value) => {
-        const data = searchCriteria;
+    const handledecadeRange = (value) => {
+        const data = decadeRange;
         let array = [];
 
         for (let key in data) {
@@ -114,9 +114,9 @@ function LandingPage() {
 
         newFilters[category] = filters
 
-        if (category === "searchCriteria") {
-            let searchCriteriaValues = handlesearchCriteria(filters)
-            newFilters[category] = searchCriteriaValues
+        if (category === "decadeRange") {
+            let decadeRangeValues = handledecadeRange(filters)
+            newFilters[category] = decadeRangeValues
 
         }
 
@@ -139,6 +139,7 @@ function LandingPage() {
         setSearchTerms(newSearchTerm)
 
         getProducts(variables)
+        console.log(varables);
     }
 
 
@@ -159,8 +160,8 @@ function LandingPage() {
                 </Col>
                 <Col lg={12} xs={24}>
                     <RadioBox
-                        list={searchCriteria}
-                        handleFilters={filters => handleFilters(filters, "searchCriteria")}
+                        list={decadeRange}
+                        handleFilters={filters => handleFilters(filters, "decadeRange")}
                     />
                 </Col>
             </Row>
