@@ -5,7 +5,7 @@ const config = require("../config/key");
 
 
 // API 요청 라우트
-router.get('/', async (req, res) => {
+router.get('/getBooks', async (req, res) => {
   const url = "http://apis.data.go.kr/9720000/searchservice/basic"; // API URL
   const params = {
     serviceKey: config.libraryApiKey, // URL 인코딩된 인증키
