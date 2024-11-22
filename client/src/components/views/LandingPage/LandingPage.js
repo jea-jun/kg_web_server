@@ -40,13 +40,14 @@ function LandingPage() {
                 // 서버에서 데이터를 받아오는 로직
                 console.log("Received Data:", response.data); // 받아온 데이터 출력
     
-                let xmlData = response.data;
+                // XML 데이터 추출
+                let xmlData = response.data.data;
     
                 // XML 데이터가 문자열일 때만 replace 수행
                 if (typeof xmlData === 'string') {
                     xmlData = xmlData.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
                 } else {
-                    console.error("Received data is not a string:", response.data);
+                    console.error("Received data is not a valid XML string:", response.data);
                     return;
                 }
     
@@ -91,10 +92,6 @@ function LandingPage() {
                 alert('An error occurred while fetching data. Please try again later.');
             });
     };
-    
-    
-    
-    
     
     const onLoadMore = () => {
         let skip = Skip + Limit;
