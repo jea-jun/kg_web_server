@@ -53,17 +53,19 @@ function LandingPage() {
                                 for (let i = 0; i < items.length; i++) {
                                     const nameElement = items[i].getElementsByTagName("name")[0];
                                     if (nameElement && nameElement.textContent === name) {
-                                        return items[i].getElementsByTagName("value")[0].textContent || '';
+                                        return (items[i].getElementsByTagName("value")[0].textContent || '').trim();
                                     }
                                 }
                                 return '';
                             };
                             return {
                                 controlNumber: getValueByName("제어번호"),
-                                title: getValueByName("자료명") || getValueByName("기사명") || getValueByName("저널명"),
-                                author: getValueByName("저자명"),
-                                contents: getValueByName("목차"),
-                                publishYear: getValueByName("제공년도")
+                                author: getValueByName("저자명").trim(),
+                                contents: getValueByName("목차").trim(),
+                                publishYear: getValueByName("발행년도").trim(),
+                                title: (getValueByName("자료명") || getValueByName("기사명") || getValueByName("저널명") || getValueByName("수록지명"))
+        .replace(/\s*\/\s*$/, '') // 끝에 오는 '/' 제거
+        .trim(), // 공백 제거
                             };
                         });
                         setProducts(products);
@@ -100,11 +102,10 @@ function LandingPage() {
 
 
     const renderCards = Products.map((product, index) => {
-        console.log(product.title)
         return <Col key={index} lg={6} md={8} xs={24}>
         <Card
             hoverable={true}
-            cover={<div>{product.title}</div>}
+            cover={<div>{index}</div>}
         >
             <Meta
                 title={product.title}
