@@ -107,6 +107,7 @@ function LandingPage() {
             cover={<div>{product.title}</div>}
         >
             <Meta
+                title={product.title}
                 description={
                     <div>
                         <p>Author: {product.author}</p>
