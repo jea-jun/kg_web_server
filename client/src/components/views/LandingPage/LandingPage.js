@@ -38,21 +38,12 @@ function LandingPage() {
         Axios.get('/api/book/getBooks', { params: variables })
             .then(response => {
                 // 서버에서 데이터를 받아오는 로직
-                console.log("Received Data:", response.data); // 받아온 데이터 출력
-
-                // XML 데이터 추출
                 let xmlData = response.data.data;
 
                 // XML 데이터가 문자열일 때만 파싱 수행
                 if (typeof xmlData === 'string' && xmlData.startsWith('<?xml')) {
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(xmlData, "application/xml");
-
-                    // XML 파싱 오류 검사
-                    if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
-                        console.error("XML Parsing Error:", xmlDoc.getElementsByTagName("parsererror")[0].textContent);
-                        return;
-                    }
 
                     const records = xmlDoc.getElementsByTagName("recode");
                     if (records.length > 0) {
@@ -62,7 +53,7 @@ function LandingPage() {
                                 for (let i = 0; i < items.length; i++) {
                                     const nameElement = items[i].getElementsByTagName("name")[0];
                                     if (nameElement && nameElement.textContent === name) {
-                                        return items[i].getElementsByTagName("value")[0]?.textContent || '';
+                                        return items[i].getElementsByTagName("value")[0].textContent || '';
                                     }
                                 }
                                 return '';
@@ -91,6 +82,7 @@ function LandingPage() {
                 setProducts([]);
             });
     };
+
     
     const onLoadMore = () => {
         let skip = Skip + Limit;
