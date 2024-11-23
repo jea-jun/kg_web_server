@@ -146,13 +146,14 @@ function LandingPage() {
                             Date:
                             <input
                                 type="date"
-                                value={selectedDateTime.date}
-                                onChange={(e) =>
+                                value={selectedDateTime.date || ''}
+                                onChange={(e) => {
+                                    const value = e.target.value; // 즉시 값 저장
                                     setSelectedDateTime((prev) => ({
                                         ...prev,
-                                        date: e.target.value,
-                                    }))
-                                }
+                                        date: value,
+                                    }));
+                                }}
                                 className="date-input"
                             />
                         </label>
@@ -160,19 +161,22 @@ function LandingPage() {
                             Time:
                             <input
                                 type="time"
-                                value={selectedDateTime.time}
-                                onChange={(e) =>
+                                value={selectedDateTime.time || ''}
+                                onChange={(e) => {
+                                    const value = e.target.value; // 즉시 값 저장
                                     setSelectedDateTime((prev) => ({
                                         ...prev,
-                                        time: e.target.value,
-                                    }))
-                                }
+                                        time: value,
+                                    }));
+                                }}
                                 className="time-input"
                             />
                         </label>
                         <button
                             onClick={() => {
-                                alert(`Reserved on ${selectedDateTime.date} at ${selectedDateTime.time}`);
+                                alert(
+                                    `Reserved on ${selectedDateTime.date} at ${selectedDateTime.time}`
+                                );
                                 setSelectedCard(null); // 예약 후 선택 해제
                             }}
                             className="reservation-button"
@@ -180,6 +184,7 @@ function LandingPage() {
                             Reserve
                         </button>
                     </div>
+
                     )}
                 </Card>
             </Col>
