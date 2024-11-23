@@ -11,7 +11,7 @@ import UploadProductPage from './views/UploadProductPage/UploadProductPage'
 import DetailProductPage from './views/DetailProductPage/DetailProductPage';
 import CartPage from './views/CartPage/CartPage';
 import HistoryPage from './views/HistoryPage/HistoryPage';
-import LibraryPage from './views/LibraryPage/LibraryPage.html';
+import LibraryPage from './views/LibraryPage/LibraryPage.js';
 
 function App() {
   return (
