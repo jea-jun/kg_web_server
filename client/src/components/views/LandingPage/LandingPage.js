@@ -203,6 +203,7 @@ function LandingPage() {
                             onClick={async () => {
                                 try {
                                     await sendDateTimeToServer();
+                                    setSelectedDateTime({ date: '', time: '' });
                                     setSelectedCard(null);
                                 } catch (error) {
                                     console.error("Failed to send date and time:", error);
