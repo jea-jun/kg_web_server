@@ -26,7 +26,7 @@ function App() {
           <Route exact path="/product/:productId" component={Auth(DetailProductPage, null)} />
           <Route exact path="/user/cart" component={Auth(CartPage, true)} />
           <Route exact path="/history" component={Auth(HistoryPage, true)} />
-          <Route exact path="/library" component={Auth(LibraryPage, true)} />
+          <Route exact path="/library" component={Auth(LibraryPage, null)} />
         </Switch>
       </div>
       <Footer />
