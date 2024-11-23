@@ -5,7 +5,6 @@ import CheckBox from './Sections/CheckBox';
 import RadioBox from './Sections/RadioBox';
 import { category, decadeRanges } from './Sections/Datas';
 import SearchFeature from './Sections/SearchFeature';
-import { handleCardClick, handleDateChange, handleTimeChange, handleReservation, handleOutsideClick } from './Sections/ReservationButton';
 import './Sections/LandingPage.css';
 
 const { Meta } = Card;
@@ -70,8 +69,8 @@ function LandingPage() {
                                 contents: getValueByName("목차").trim(),
                                 publishYear: getValueByName("발행년도").trim(),
                                 title: (getValueByName("자료명") || getValueByName("기사명") || getValueByName("저널명") || getValueByName("수록지명"))
-        .replace(/\s*\/\s*$/, '') // 끝에 오는 '/' 제거
-        .trim(), // 공백 제거
+        .replace(/\s*\/\s*$/, '')
+        .trim(),
                             };
                         });
                         setProducts(products);
@@ -85,7 +84,7 @@ function LandingPage() {
                 }
             })
             .catch(error => {
-                console.error("API 요청 오류:", error.message || error); // 오류 로그 출력
+                console.error("API 요청 오류:", error.message || error);
                 alert('An error occurred while fetching data. Please try again later.');
                 setProducts([]);
             });
@@ -105,12 +104,6 @@ function LandingPage() {
         getProducts(variables)
         setSkip(skip)
     }
-
-    const handleReservation = (selectedDateTime, setIsTimePickerVisible) => {
-        alert(`Reservation confirmed for ${selectedDateTime.date} at ${selectedDateTime.time}`);
-        setIsTimePickerVisible(false);
-        setSelectedDateTime({ date: '', time: '' }); // 선택된 날짜와 시간을 초기화
-    };
     
     // 외부 클릭 감지 핸들러
     const handleOutsideClick = (e) => {
@@ -121,58 +114,25 @@ function LandingPage() {
 
     const renderCards = Products.map((product, index) => {
         return (
-            <Col key={index} lg={6} md={8} xs={24}>
-                <Card
-                    className={selectedCard === index ? 'card-selected' : ''}
-                    hoverable={true}
-                    onClick={(e) => {
-                        e.stopPropagation(); // 이벤트 버블링 방지
-                        handleCardClick(index, setSelectedCard, setIsTimePickerVisible);
-                    }}
-                    cover={<div>{product.controlNumber}</div>}
-                >
-                    <Meta
-                        title={product.title}
-                        description={
-                            <div>
-                                <p>Author: {product.author}</p>
-                                <p>Year: {product.publishYear}</p>
-                                <p>Contents: {product.contents}</p>
-                            </div>
-                        }
-                    />
-    
-                    {/* 시간 선택 창 */}
-                    {selectedCard === index && (
-                        <div className="time-picker-container">
-                            <label>
-                                Date:
-                                <input
-                                    type="date"
-                                    value={selectedDateTime.date}
-                                    onChange={(e) => handleDateChange(e, selectedDateTime, setSelectedDateTime)}
-                                    className="date-input"
-                                />
-                            </label>
-                            <label>
-                                Time:
-                                <input
-                                    type="time"
-                                    value={selectedDateTime.time}
-                                    onChange={(e) => handleTimeChange(e, selectedDateTime, setSelectedDateTime)}
-                                    className="time-input"
-                                />
-                            </label>
-                            <button
-                                onClick={() => handleReservation(selectedDateTime, setIsTimePickerVisible)}
-                                className="reservation-button"
-                            >
-                                Reserve
-                            </button>
+        <Col key={index} lg={6} md={8} xs={24}>
+            <Card
+                className={`card ${selectedCard === index ? 'card-selected' : ''}`}
+                hoverable={true}
+                onClick={() => setSelectedCard(index)}
+                cover={<div>{product.controlNumber}</div>}
+            >
+                <Meta
+                    title={product.title}
+                    description={
+                        <div>
+                            <p>Author: {product.author}</p>
+                            <p>Year: {product.publishYear}</p>
+                            <p>Contents: {product.contents}</p>
                         </div>
-                    )}
-                </Card>
-            </Col>
+                    }
+                />
+            </Card>
+        </Col>
         );
     });
     
