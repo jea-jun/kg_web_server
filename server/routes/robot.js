@@ -10,5 +10,4 @@ router.post('/', (req, res) => {
     }
 });
 
-
 module.exports = router; // 라우터만 내보내기
