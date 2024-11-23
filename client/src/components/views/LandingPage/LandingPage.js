@@ -138,47 +138,48 @@ function LandingPage() {
     
                     {/* 시간 선택창 */}
                     {selectedCard === index && (
-                        <div className="time-picker-container">
-                            <label>
-                                Date:
-                                <input
-                                    type="date"
-                                    value={selectedDateTime.date}
-                                    onChange={(e) =>
-                                        setSelectedDateTime((prev) => ({
-                                            ...prev,
-                                            date: e.target.value,
-                                        }))
-                                    }
-                                    className="date-input"
-                                />
-                            </label>
-                            <label>
-                                Time:
-                                <input
-                                    type="time"
-                                    value={selectedDateTime.time}
-                                    onChange={(e) =>
-                                        setSelectedDateTime((prev) => ({
-                                            ...prev,
-                                            time: e.target.value,
-                                        }))
-                                    }
-                                    className="time-input"
-                                />
-                            </label>
-                            <button
-                                onClick={() => {
-                                    alert(
-                                        `Reserved on ${selectedDateTime.date} at ${selectedDateTime.time}`
-                                    );
-                                    setSelectedCard(null); // 예약 후 선택 해제
-                                }}
-                                className="reservation-button"
-                            >
-                                Reserve
-                            </button>
-                        </div>
+                    <div
+                        className="time-picker-container"
+                        onClick={(e) => e.stopPropagation()} // 부모로 이벤트 전파 방지
+                    >
+                        <label>
+                            Date:
+                            <input
+                                type="date"
+                                value={selectedDateTime.date}
+                                onChange={(e) =>
+                                    setSelectedDateTime((prev) => ({
+                                        ...prev,
+                                        date: e.target.value,
+                                    }))
+                                }
+                                className="date-input"
+                            />
+                        </label>
+                        <label>
+                            Time:
+                            <input
+                                type="time"
+                                value={selectedDateTime.time}
+                                onChange={(e) =>
+                                    setSelectedDateTime((prev) => ({
+                                        ...prev,
+                                        time: e.target.value,
+                                    }))
+                                }
+                                className="time-input"
+                            />
+                        </label>
+                        <button
+                            onClick={() => {
+                                alert(`Reserved on ${selectedDateTime.date} at ${selectedDateTime.time}`);
+                                setSelectedCard(null); // 예약 후 선택 해제
+                            }}
+                            className="reservation-button"
+                        >
+                            Reserve
+                        </button>
+                    </div>
                     )}
                 </Card>
             </Col>
