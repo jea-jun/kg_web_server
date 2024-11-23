@@ -10,60 +10,33 @@
     border-radius: 8px; /* 카드의 모서리를 부드럽게 */
 }
 
-
-.time-picker-panel {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 300px;
-    height: 100vh;
-    background: #007bff;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    transition: transform 0.3s ease-in-out;
-    z-index: 1000;
-}
-
-/* 스타일링 예시 */
 .time-picker-container {
-    margin-top: 10px;
+    margin-top: 15px;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #007bff;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 .date-input,
 .time-input {
     display: block;
-    margin-bottom: 10px;
+    margin: 5px 0;
     width: 100%;
     padding: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    font-size: 14px;
 }
 
 .reservation-button {
+    margin-top: 10px;
     padding: 5px 10px;
     background-color: #007bff;
-    color: #fff;
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
-.card-selected {
-    border: 2px solid #007bff;
-    transition: 0.3s;
-}
-.time-picker {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #007bff;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    z-index: 1000;
+.reservation-button:hover {
+    background-color: #0056b3;
 }

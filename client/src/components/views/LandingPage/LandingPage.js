@@ -18,6 +18,7 @@ function LandingPage() {
     const [selectedCard, setSelectedCard] = useState(null);
     const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
     const [selectedDateTime, setSelectedDateTime] = useState({ date: '', time: '' });
+    
 
     const [Filters, setFilters] = useState({
         category: [],
@@ -111,31 +112,78 @@ function LandingPage() {
             setSelectedCard(null); // 외부를 클릭하면 선택 해제
         }
     };
-
+    
     const renderCards = Products.map((product, index) => {
         return (
-        <Col key={index} lg={6} md={8} xs={24}>
-            <Card
-                className={`card ${selectedCard === index ? 'card-selected' : ''}`}
-                hoverable={true}
-                onClick={() => setSelectedCard(index)}
-                cover={<div>{product.controlNumber}</div>}
-            >
-                <Meta
-                    title={product.title}
-                    description={
-                        <div>
-                            <p>Author: {product.author}</p>
-                            <p>Year: {product.publishYear}</p>
-                            <p>Contents: {product.contents}</p>
-                        </div>
-                    }
-                />
-            </Card>
-        </Col>
-        );
-    });
+            <Col key={index} lg={6} md={8} xs={24}>
+                <Card
+                    className={`card ${selectedCard === index ? 'card-selected' : ''}`}
+                    hoverable={true}
+                    onClick={(e) => {
+                        e.stopPropagation(); // 이벤트 버블링 방지
+                        setSelectedCard(index === selectedCard ? null : index); // 카드 선택/해제
+                    }}
+                    cover={<div>{product.controlNumber}</div>}
+                >
+                    <Meta
+                        title={product.title}
+                        description={
+                            <div>
+                                <p>Author: {product.author}</p>
+                                <p>Year: {product.publishYear}</p>
+                                <p>Contents: {product.contents}</p>
+                            </div>
+                        }
+                    />
     
+                    {/* 시간 선택창 */}
+                    {selectedCard === index && (
+                        <div className="time-picker-container">
+                            <label>
+                                Date:
+                                <input
+                                    type="date"
+                                    value={selectedDateTime.date}
+                                    onChange={(e) =>
+                                        setSelectedDateTime((prev) => ({
+                                            ...prev,
+                                            date: e.target.value,
+                                        }))
+                                    }
+                                    className="date-input"
+                                />
+                            </label>
+                            <label>
+                                Time:
+                                <input
+                                    type="time"
+                                    value={selectedDateTime.time}
+                                    onChange={(e) =>
+                                        setSelectedDateTime((prev) => ({
+                                            ...prev,
+                                            time: e.target.value,
+                                        }))
+                                    }
+                                    className="time-input"
+                                />
+                            </label>
+                            <button
+                                onClick={() => {
+                                    alert(
+                                        `Reserved on ${selectedDateTime.date} at ${selectedDateTime.time}`
+                                    );
+                                    setSelectedCard(null); // 예약 후 선택 해제
+                                }}
+                                className="reservation-button"
+                            >
+                                Reserve
+                            </button>
+                        </div>
+                    )}
+                </Card>
+            </Col>
+    );
+});
 
 
     const showFilteredResults = (filters) => {
