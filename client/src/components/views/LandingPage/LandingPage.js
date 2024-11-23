@@ -90,18 +90,17 @@ function LandingPage() {
                 setProducts([]);
             });
     };
-
     const sendDateTimeToServer = () => {
         const { date, time } = selectedDateTime;
-
+    
         if (!date || !time) {
             alert("날짜와 시간을 모두 입력해주세요.");
             return;
         }
-
+    
         const payload = { date, time };
-
-        Axios.post('/api/sendDateTime', payload)
+    
+        Axios.post('/api/robot', payload)
             .then((response) => {
                 if (response.data.success) {
                     console.log("DateTime sent successfully:", response.data);
@@ -116,6 +115,7 @@ function LandingPage() {
                 alert("서버 전송 중 오류가 발생했습니다.");
             });
     };
+    
 
 
     
