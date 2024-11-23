@@ -91,6 +91,33 @@ function LandingPage() {
             });
     };
 
+    const sendDateTimeToServer = () => {
+        const { date, time } = selectedDateTime;
+
+        if (!date || !time) {
+            alert("날짜와 시간을 모두 입력해주세요.");
+            return;
+        }
+
+        const payload = { date, time };
+
+        Axios.post('/api/sendDateTime', payload)
+            .then((response) => {
+                if (response.data.success) {
+                    console.log("DateTime sent successfully:", response.data);
+                    alert("날짜와 시간이 성공적으로 전송되었습니다.");
+                } else {
+                    console.error("Failed to send DateTime:", response.data.message);
+                    alert("전송에 실패했습니다.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error sending DateTime:", error.message);
+                alert("서버 전송 중 오류가 발생했습니다.");
+            });
+    };
+
+
     
     const onLoadMore = () => {
         let skip = Skip + Limit;
@@ -173,15 +200,17 @@ function LandingPage() {
                             />
                         </label>
                         <button
-                            onClick={() => {
-                                alert(
-                                    `Reserved on ${selectedDateTime.date} at ${selectedDateTime.time}`
-                                );
-                                setSelectedCard(null); // 예약 후 선택 해제
+                            onClick={async () => {
+                                try {
+                                    await sendDateTimeToServer();
+                                    setSelectedCard(null);
+                                } catch (error) {
+                                    console.error("Failed to send date and time:", error);
+                                }
                             }}
                             className="reservation-button"
                         >
-                            Reserve
+                            예약하기
                         </button>
                     </div>
 
