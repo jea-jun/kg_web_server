@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+function RobotModel() {
+  const { scene } = useGLTF('./Sections/untitled.glb');
+  return <primitive object={scene} />;
+}
+
+
 function RobotStatusPage() {
   const [robotData, setRobotData] = useState([]);
 
@@ -53,7 +59,19 @@ function RobotStatusPage() {
           <img src="/path/to/camera/feed" alt="Camera Feed" />
         </div>
       </div>
+      <div className="blender-model-container">
+        <h1>3D Robot Model</h1>
+        <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[10, 10, 5]} intensity={1} />
+          <Suspense fallback={null}>
+            <RobotModel />
+          </Suspense>
+          <OrbitControls />
+        </Canvas>
+      </div>
     </div>
+    
   );
 }
 
