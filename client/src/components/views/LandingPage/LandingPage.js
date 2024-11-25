@@ -41,7 +41,7 @@ function LandingPage() {
 
     const getProducts = (variables) => {
         // GET 요청 시에는 params로 쿼리 파라미터를 전달
-        Axios.get('/api/book/getBooks', { params: variables })
+        Axios.get('/api/book/getBooks/datetime', { params: variables })
             .then(response => {
                 // 서버에서 데이터를 받아오는 로직
                 let xmlData = response.data.data;
