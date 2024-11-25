@@ -1,5 +1,4 @@
-import React, { useEffect, useState, Suspense } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState, useRef, Suspense } from 'react';import axios from 'axios';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
