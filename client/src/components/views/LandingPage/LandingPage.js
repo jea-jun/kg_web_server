@@ -41,7 +41,7 @@ function LandingPage() {
 
     const getProducts = (variables) => {
         // GET 요청 시에는 params로 쿼리 파라미터를 전달
-        Axios.get('/api/book/getBooks/datetime', { params: variables })
+        Axios.get('/api/book/getBooks', { params: variables })
             .then(response => {
                 // 서버에서 데이터를 받아오는 로직
                 let xmlData = response.data.data;
@@ -100,7 +100,7 @@ function LandingPage() {
     
         const payload = { date, time };
     
-        Axios.post('/api/robot', payload)
+        Axios.post('/api/robot/DateTime', payload)
             .then((response) => {
                 if (response.data.success) {
                     console.log("DateTime sent successfully:", response.data);

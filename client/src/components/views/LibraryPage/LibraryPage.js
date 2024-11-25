@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function LibraryPage() {
+function RobotStatusPage() {
   const [robotData, setRobotData] = useState([]);
 
   useEffect(() => {
-    // 로봇 상태 데이터를 서버로부터 가져오기
     axios.get('/data')
       .then(response => {
         if (response.data.success) {
@@ -20,26 +19,42 @@ function LibraryPage() {
   }, []);
 
   return (
-    <div>
-      <h1>Robot Status Data</h1>
-      {robotData.length > 0 ? (
+    <div className="robot-status-container">
+      <div className="text-container">
+        <h1>Robot Status Data</h1>
         <ul>
-          {robotData.map((data, index) => (
-            <li key={index}>
-              <div>Date: {data.date || 'N/A'}</div>
-              <div>Time: {data.time || 'N/A'}</div>
-              <div>AGV: {data.agv || 'N/A'}</div>
-              <div>Robot Arm: {data.robot_arm ? data.robot_arm.join(', ') : 'N/A'}</div>
-              <div>Other Data: {JSON.stringify(data.otherData) || 'N/A'}</div>
+          {robotData.length > 0 ? (
+            robotData.map((data, index) => (
+              <li key={index}>
+                <div>Date: {data.date || 'N/A'}</div>
+                <div>Time: {data.time || 'N/A'}</div>
+                <div>AGV: {data.agv || 'N/A'}</div>
+                <div>Robot Arm: {data.robot_arm ? data.robot_arm.join(', ') : 'N/A'}</div>
+                <div>Other Data: {JSON.stringify(data.otherData) || 'N/A'}</div>
+                <hr />
+              </li>
+            ))
+          ) : (
+            <li>
+              <div>Date: N/A</div>
+              <div>Time: N/A</div>
+              <div>AGV: N/A</div>
+              <div>Robot Arm: N/A</div>
+              <div>Other Data: N/A</div>
               <hr />
             </li>
-          ))}
+          )}
         </ul>
-      ) : (
-        <p>No robot data available.</p>
-      )}
+      </div>
+      <div className="camera-container">
+        <h1>Camera View</h1>
+        <div className="camera-feed">
+          {/* 여기에 카메라 피드를 표시하기 위한 요소를 추가 */}
+          <img src="/path/to/camera/feed" alt="Camera Feed" />
+        </div>
+      </div>
     </div>
   );
 }
 
-export default LibraryPage;
+export default RobotStatusPage;
