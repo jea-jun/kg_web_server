@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
 function RobotModel() {
-  const { scene } = useGLTF('./Sections/untitled.glb');
+  const { scene } = useGLTF('/untitled.glb');
   return <primitive object={scene} />;
 }
 
