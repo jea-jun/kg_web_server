@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef, Suspense } from 'react';import axios from 'axios';
+import React, { useEffect, useState, useRef, Suspense } from 'react';
+import axios from 'axios';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
@@ -18,15 +19,14 @@ function RobotModel({ robotData }) {
   useFrame(() => {
     if (robotData && robotData.robot_arm_joint) {
       // 로봇 암 관절 데이터를 적용
-      const joints = robotData.robot_arm_joint; // 예: [0, 0.5, -1.2, 0.3, 0.8, -0.5]
+      const joints = robotData.robot_arm_joint; // 예: [0, 0.5, -1.2, 0.3, 0.8, -0.5, 1.0]
       axisRefs.axis1.current.rotation.y = joints[0] || 0;
       axisRefs.axis2.current.rotation.z = joints[1] || 0;
       axisRefs.axis3.current.rotation.x = joints[2] || 0;
       axisRefs.axis4.current.rotation.y = joints[3] || 0;
       axisRefs.axis5.current.rotation.z = joints[4] || 0;
       axisRefs.axis6.current.rotation.x = joints[5] || 0;
-      axisRefs.axis6.current.rotation.x = joints[6] || 0;
-
+      axisRefs.axis7.current.rotation.z = joints[6] || 0; // 7번째 축 추가
     }
   });
 
@@ -38,9 +38,9 @@ function RobotModel({ robotData }) {
             <group ref={axisRefs.axis4}>
               <group ref={axisRefs.axis5}>
                 <group ref={axisRefs.axis6}>
-                  <group ref={axisRefs.axis6}> 
+                  <group ref={axisRefs.axis7}>
                     <primitive object={scene} />
-                    </group>
+                  </group>
                 </group>
               </group>
             </group>
@@ -86,7 +86,10 @@ function RobotStatusPage() {
               <div>Date: {data.date || 'N/A'}</div>
               <div>Time: {data.time || 'N/A'}</div>
               <div>AGV: {data.agv || 'N/A'}</div>
-              <div>Robot Arm: {data.robot_arm_joint?.join(', ') || 'N/A'}</div>
+              <div>
+                Robot Arm:{' '}
+                {(data.robot_arm_joint && data.robot_arm_joint.join(', ')) || 'N/A'}
+              </div>
               <div>Other Data: {JSON.stringify(data.otherData) || 'N/A'}</div>
               <hr />
             </div>
