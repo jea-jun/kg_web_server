@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import axios from 'axios';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, useGLTF } from '@react-three/drei';
 
 function RobotModel() {
   const { scene } = useGLTF('./Sections/untitled.glb');
   return <primitive object={scene} />;
 }
-
 
 function RobotStatusPage() {
   const [robotData, setRobotData] = useState([]);
@@ -71,8 +72,16 @@ function RobotStatusPage() {
         </Canvas>
       </div>
     </div>
-    
   );
 }
 
 export default RobotStatusPage;
+
+// Notes:
+// 1. Replace '/path/to/your/robot-model.glb' with the actual path to your GLB file.
+// 2. Install dependencies compatible with React 17:
+//    npm install @react-three/fiber@^6.2.3 @react-three/drei@^6.2.2 three@^0.128.0 --legacy-peer-deps
+// 3. Ensure your Node version is 16 to avoid compatibility issues.
+// 4. The <Suspense> component helps with loading the model asynchronously.
+// 5. To check if the necessary packages are installed, run:
+//    npm list @react-three/fiber @react-three/drei three
