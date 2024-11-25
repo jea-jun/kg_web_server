@@ -26,7 +26,7 @@ router.post('/datetime', (req, res) => {
         success: true,
         message: 'Date and time received and stored successfully.',
         data: newData
-    });
+    }); 
 });
 
 router.post('/robot-control', (req, res) => {
