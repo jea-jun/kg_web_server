@@ -49,18 +49,3 @@
 
 ## 라이선스
 이 프로젝트는 **MIT 라이선스** 하에 배포됩니다.
-
-# My Project
-- controlNumber: 제어번호 ("KINX2024097217")
-- title: 기사명 ("한국사 교과서 고대사 영역에서 이주 서술과 역사 학습...")
-- author: 저자명 ("金聖玹")
-- journalName: 수록지명 ("歷史敎育 = The Korean history education review. 제169집 (2024년 3월)")
-- publisher: 발행자 ("歷史敎育硏究會")
-- keywords: 키워드 ("한국사 교과서 고대사 영역에서 이주 서술과 역사 학습...)
-- contents: 목차 ("N")
-- language: 본문언어 ("kor")
-- copyrightPermission: 저작권허락 ("N")
-- abstractAvailable: 초록유무 ("")
-- publishYear: 발행년도 ("2024")
-- originalDBAvailable: 원본DB유무 ("Y")
-- libraryLocation: 자료실 ("[본관] 정기간행물실(524호)")
