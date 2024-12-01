@@ -19,14 +19,14 @@ function RobotModel({ robotData }) {
   useFrame(() => {
     if (robotData && robotData.robot_arm_joint) {
       // 로봇 암 관절 데이터를 적용
-      const joints = robotData.robot_arm_joint; // 예: [0, 0.5, -1.2, 0.3, 0.8, -0.5, 1.0]
+      const joints = robotData.robot_arm_joint;
       axisRefs.axis1.current.rotation.y = joints[0] || 0;
       axisRefs.axis2.current.rotation.z = joints[1] || 0;
       axisRefs.axis3.current.rotation.x = joints[2] || 0;
       axisRefs.axis4.current.rotation.y = joints[3] || 0;
       axisRefs.axis5.current.rotation.z = joints[4] || 0;
       axisRefs.axis6.current.rotation.x = joints[5] || 0;
-      axisRefs.axis7.current.rotation.z = joints[6] || 0; // 7번째 축 추가
+      axisRefs.axis7.current.rotation.z = joints[6] || 0;
     }
   });
 
@@ -52,7 +52,7 @@ function RobotModel({ robotData }) {
 }
 
 function RobotStatusPage() {
-  const [robotData, setRobotData] = useState(null);  // 객체로 초기화
+  const [robotData, setRobotData] = useState(null);
   const [agvData, setAgvData] = useState({});
 
   useEffect(() => {
@@ -61,7 +61,7 @@ function RobotStatusPage() {
         const response = await axios.get('/api/robot/data');
         if (response.data.success) {
           console.log("Fetched Data:", response.data.data);
-          setRobotData(response.data.data);  // 데이터를 객체로 설정
+          setRobotData(response.data.data);
           setAgvData(response.data.data.agv || {});
         } else {
           console.error('Failed to fetch robot/AGV data');
@@ -74,7 +74,7 @@ function RobotStatusPage() {
     // 1초 간격으로 데이터 업데이트
     const interval = setInterval(fetchData, 1000);
 
-    return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -105,7 +105,6 @@ function RobotStatusPage() {
       </div>
       <div className="camera-container">
         <h1>Camera View</h1>
-        {/* 카메라 피드가 포함될 HTML */}
         <div className="camera-feed">
           <img src="/path/to/camera/feed" alt="Camera Feed" />
         </div>
@@ -116,7 +115,6 @@ function RobotStatusPage() {
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1.0} />
           <Suspense fallback={<div>Loading 3D model...</div>}>
-            {/* RobotModel에 로봇 데이터를 전달 */}
             <RobotModel robotData={robotData} />
           </Suspense>
           <OrbitControls />
