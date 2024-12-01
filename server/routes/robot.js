@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-let receivedData = [];
+let receivedData = {}; // 배열 대신 객체로 변경
 
 router.post('/datetime', (req, res) => {
     const { date, time } = req.body;
@@ -20,7 +20,7 @@ router.post('/datetime', (req, res) => {
         ...(validatedDate && { date: validatedDate }),
         ...(validatedTime && { time: validatedTime })  
     };
-    receivedData.push(newData);
+    receivedData = { ...receivedData, ...newData }; // 데이터를 덮어쓰기
 
     res.status(200).json({
         success: true,
@@ -58,7 +58,7 @@ router.post('/robot-control', (req, res) => {
         ...(validatedRobotArm && { robot_arm: validatedRobotArm }), 
         ...otherData 
     };
-    receivedData.push(newData);
+    receivedData = { ...receivedData, ...newData }; // 데이터를 덮어쓰기
 
     res.status(200).json({
         success: true,
@@ -96,7 +96,7 @@ router.post('/robot-status', (req, res) => {
         ...(validatedRobotArm && { robot_arm: validatedRobotArm }), 
         ...otherData 
     };
-    receivedData.push(newData);
+    receivedData = { ...receivedData, ...newData }; // 데이터를 덮어쓰기
 
     res.status(200).json({
         success: true,
@@ -109,7 +109,7 @@ router.get('/data', (req, res) => {
     res.status(200).json({
         success: true,
         message: 'Retrieved stored data successfully.',
-        data: receivedData
+        data: receivedData // 전체 객체로 반환
     });
 });
 
