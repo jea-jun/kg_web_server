@@ -27,21 +27,30 @@ def send_robot_status():
     except requests.RequestException as e:
         print(f"Error sending status: {e}")
 
-# 서버로부터 데이터 가져오기
 def fetch_data():
     global received_data
     try:
         response = requests.get(f"{BASE_URL}/data")
         if response.status_code == 200:
-            data = response.json()
-            if data.get("success"):
-                # 데이터를 키-값 형태로 저장하여 인덱스를 사용하지 않음
-                received_data = {item.get("date", f"data_{idx}") + " " + item.get("time", f"time_{idx}"): item for idx, item in enumerate(data.get("data", []))}
-                print("Updated Received Data:")
-                for key, item in received_data.items():
-                    print(f"  {key}: {json.dumps(item, indent=2)}")
-            else:
-                print("Failed to fetch data:", data.get("message", "Unknown error"))
+            try:
+                # 응답이 JSON인지 확인하고 파싱
+                data = response.json()
+                
+                # 응답이 문자열이 아니라 딕셔너리인지 확인
+                if isinstance(data, dict) and data.get("success"):
+                    # 데이터를 키-값 형태로 저장하여 인덱스를 사용하지 않음
+                    received_data = {
+                        f"{item.get('date', f'data_{idx}')} {item.get('time', f'time_{idx}')}": item
+                        for idx, item in enumerate(data.get("data", []))
+                        if isinstance(item, dict)  # 각 항목이 딕셔너리인지 확인
+                    }
+                    print("Updated Received Data:")
+                    for key, item in received_data.items():
+                        print(f"  {key}: {json.dumps(item, indent=2)}")
+                else:
+                    print("Failed to fetch data: JSON format error or 'success' key missing.")
+            except json.JSONDecodeError:
+                print("Error: Received response is not valid JSON")
         else:
             print(f"Failed to fetch data. HTTP {response.status_code}: {response.text}")
     except requests.RequestException as e:
