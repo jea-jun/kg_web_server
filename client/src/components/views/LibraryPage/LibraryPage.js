@@ -52,16 +52,17 @@ function RobotModel({ robotData }) {
 }
 
 function RobotStatusPage() {
-  const [robotData, setRobotData] = useState([]);
-  const [agvData, setAgvData] = useState([]);
+  const [robotData, setRobotData] = useState(null);  // 객체로 초기화
+  const [agvData, setAgvData] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get('/api/robot/data');
         if (response.data.success) {
-          setRobotData(response.data.data);
-          setAgvData(response.data.data.agv || {}); // AGV 데이터 추출
+          console.log("Fetched Data:", response.data.data);
+          setRobotData(response.data.data);  // 데이터를 객체로 설정
+          setAgvData(response.data.data.agv || {});
         } else {
           console.error('Failed to fetch robot/AGV data');
         }
@@ -80,20 +81,18 @@ function RobotStatusPage() {
     <div className="robot-status-container">
       <div className="text-container">
         <h1>Robot Status</h1>
-        {robotData.length > 0 ? (
-          robotData.map((data, index) => (
-            <div key={index}>
-              <div>Date: {data.date || 'N/A'}</div>
-              <div>Time: {data.time || 'N/A'}</div>
-              <div>AGV: {data.agv || 'N/A'}</div>
-              <div>
-                Robot Arm:{' '}
-                {(data.robot_arm_joint && data.robot_arm_joint.join(', ')) || 'N/A'}
-              </div>
-              <div>Other Data: {JSON.stringify(data.otherData) || 'N/A'}</div>
-              <hr />
+        {robotData ? (
+          <div>
+            <div>Date: {robotData.date || 'N/A'}</div>
+            <div>Time: {robotData.time || 'N/A'}</div>
+            <div>AGV: {robotData.agv || 'N/A'}</div>
+            <div>
+              Robot Arm:{' '}
+              {(robotData.robot_arm_joint && robotData.robot_arm_joint.join(', ')) || 'N/A'}
             </div>
-          ))
+            <div>Other Data: {JSON.stringify(robotData.otherData) || 'N/A'}</div>
+            <hr />
+          </div>
         ) : (
           <div>
             <div>Date: N/A</div>
@@ -116,9 +115,9 @@ function RobotStatusPage() {
         <Canvas camera={{ position: [0, 6, 10], fov: 50 }}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1.0} />
-          <Suspense fallback={null}>
+          <Suspense fallback={<div>Loading 3D model...</div>}>
             {/* RobotModel에 로봇 데이터를 전달 */}
-            <RobotModel robotData={robotData[0]} />
+            <RobotModel robotData={robotData} />
           </Suspense>
           <OrbitControls />
         </Canvas>
