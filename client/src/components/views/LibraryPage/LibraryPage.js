@@ -4,8 +4,8 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
 function RobotModel({ robotData }) {
-  const { scene } = useGLTF('/untitled.glb'); // GLTF 모델 로드
-
+  const { scene } = useGLTF('/untitled.glb');
+  
   const axisRefs = {
     base: useRef(),
     shoulder: useRef(),
@@ -55,7 +55,7 @@ function RobotModel({ robotData }) {
   useFrame(() => {
     if (robotData && robotData.robot_arm_joint) {
       const joints = robotData.robot_arm_joint; // 예: [0, 0.5, -1.2, 0.3, 0.8, -0.5, 1.0]
-
+      
       // 각 관절에 대한 회전 값 설정
       if (axisRefs.base.current) {
         axisRefs.base.current.rotation.y = joints[0] || 0;
@@ -78,26 +78,16 @@ function RobotModel({ robotData }) {
       if (axisRefs.gripper.current) {
         axisRefs.gripper.current.rotation.x = joints[6] || 0;
       }
-
-      // 변형을 업데이트하도록 SkinnedMesh가 있다면 matrixWorld 업데이트
-      scene.traverse((child) => {
-        if (child.isSkinnedMesh) {
-          child.updateMatrixWorld(true);
-        }
-      });
     }
   });
 
-  return (
-    <group>
-      <primitive object={scene} />
-    </group>
-  );
+  return <primitive object={scene} />;
 }
 
 function RobotStatusPage() {
   const [robotData, setRobotData] = useState({});
   const [agvData, setAgvData] = useState({});
+  const [forceRender, setForceRender] = useState(false); // 렌더링 강제 트리거용 상태
 
   // API에서 데이터를 주기적으로 가져오기
   useEffect(() => {
@@ -116,7 +106,10 @@ function RobotStatusPage() {
     };
 
     // 1초 간격으로 데이터 업데이트
-    const interval = setInterval(fetchData, 1000);
+    const interval = setInterval(() => {
+      fetchData();
+      setForceRender(prev => !prev); // 강제 리렌더링을 위해 상태 반전
+    }, 1000);
 
     return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
   }, []);
@@ -146,7 +139,6 @@ function RobotStatusPage() {
         <h1>Camera View</h1>
         {robotData.camera ? (
           <div className="camera-feed">
-            {/* base64 이미지 출력 */}
             <img 
               src={`data:image/jpeg;base64,${robotData.camera}`} 
               alt="Camera Feed" 
@@ -164,8 +156,7 @@ function RobotStatusPage() {
         <Canvas camera={{ position: [0, 6, 10], fov: 50 }}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1.0} />
-          <Suspense fallback={<div>Loading model...</div>}>
-            {/* RobotModel에 로봇 데이터를 전달 */}
+          <Suspense fallback={null}>
             <RobotModel robotData={robotData} />
           </Suspense>
           <OrbitControls />
