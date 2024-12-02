@@ -122,8 +122,8 @@ function RobotStatusPage() {
             <div>Time: {robotData.time || 'N/A'}</div>
             <div>AGV ID: {robotData.agv || 'N/A'}</div>
             <div>Robot Arm Joint: {(robotData.robot_arm_joint && robotData.robot_arm_joint.join(', ')) || 'N/A'}</div>
-            <div>Speed: {robotData.otherData?.speed || 'N/A'}</div>
-            <div>Temperature: {robotData.otherData?.temperature || 'N/A'}</div>
+            <div>Speed: {robotData.otherData && robotData.otherData.speed ? robotData.otherData.speed : 'N/A'}</div>
+            <div>Temperature: {robotData.otherData && robotData.otherData.temperature ? robotData.otherData.temperature : 'N/A'}</div>
           </div>
         ) : (
           <div>Loading...</div> // 데이터가 로딩 중일 때 "Loading..." 출력
@@ -153,3 +153,5 @@ function RobotStatusPage() {
 }
 
 export default RobotStatusPage;
+
+
