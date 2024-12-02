@@ -4,51 +4,34 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
 function RobotModel({ robotData }) {
-  const { scene } = useGLTF('/untitled.glb');
+  const { scene } = useGLTF('/robot_model.glb'); // 모델 경로 수정
 
-  const axisRefs = {
-    axis1: useRef(),
-    axis2: useRef(),
-    axis3: useRef(),
-    axis4: useRef(),
-    axis5: useRef(),
-    axis6: useRef(),
-    axis7: useRef(),
+  // 본(Bone) 참조 설정
+  const bones = {
+    base: scene.getObjectByName('base'),
+    shoulder: scene.getObjectByName('shoulder'),
+    upper_arm: scene.getObjectByName('upper_arm'),
+    elbow: scene.getObjectByName('elbow'),
+    forearm: scene.getObjectByName('forearm'),
+    wrist: scene.getObjectByName('wrist'),
+    gripper: scene.getObjectByName('gripper'),
   };
 
+  // 애니메이션 프레임마다 로봇 관절 데이터를 업데이트
   useFrame(() => {
     if (robotData && robotData.robot_arm_joint) {
-      // 로봇 암 관절 데이터를 적용
       const joints = robotData.robot_arm_joint;
-      axisRefs.axis1.current.rotation.y = joints[0] || 0;
-      axisRefs.axis2.current.rotation.z = joints[1] || 0;
-      axisRefs.axis3.current.rotation.x = joints[2] || 0;
-      axisRefs.axis4.current.rotation.y = joints[3] || 0;
-      axisRefs.axis5.current.rotation.z = joints[4] || 0;
-      axisRefs.axis6.current.rotation.x = joints[5] || 0;
-      axisRefs.axis7.current.rotation.z = joints[6] || 0;
+      if (bones.base) bones.base.rotation.y = joints[0] || 0;
+      if (bones.shoulder) bones.shoulder.rotation.z = joints[1] || 0;
+      if (bones.upper_arm) bones.upper_arm.rotation.x = joints[2] || 0;
+      if (bones.elbow) bones.elbow.rotation.y = joints[3] || 0;
+      if (bones.forearm) bones.forearm.rotation.z = joints[4] || 0;
+      if (bones.wrist) bones.wrist.rotation.x = joints[5] || 0;
+      if (bones.gripper) bones.gripper.rotation.z = joints[6] || 0;
     }
   });
 
-  return (
-    <group>
-      <group ref={axisRefs.axis1}>
-        <group ref={axisRefs.axis2}>
-          <group ref={axisRefs.axis3}>
-            <group ref={axisRefs.axis4}>
-              <group ref={axisRefs.axis5}>
-                <group ref={axisRefs.axis6}>
-                  <group ref={axisRefs.axis7}>
-                    <primitive object={scene} />
-                  </group>
-                </group>
-              </group>
-            </group>
-          </group>
-        </group>
-      </group>
-    </group>
-  );
+  return <primitive object={scene} />;
 }
 
 function RobotStatusPage() {
@@ -60,7 +43,7 @@ function RobotStatusPage() {
       try {
         const response = await axios.get('/api/robot/data');
         if (response.data.success) {
-          console.log("Fetched Data:", response.data.data);
+          console.log('Fetched Data:', response.data.data);
           setRobotData(response.data.data);
           setAgvData(response.data.data.agv || {});
         } else {
