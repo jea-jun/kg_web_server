@@ -5,30 +5,44 @@ import { OrbitControls, useGLTF } from '@react-three/drei';
 
 function RobotModel({ robotData }) {
   // GLTF 모델 로드
-  const { nodes, scene } = useGLTF('/untitled.glb'); // 모델 경로 수정
+  const { scene } = useGLTF('/untitled.glb'); // GLTF 파일 경로 확인
 
   // 본(Bone) 참조 설정
-  const bones = {
-    base: scene.getObjectByName('base'),
-    shoulder: scene.getObjectByName('shoulder'),
-    upper_arm: scene.getObjectByName('upper_arm'),
-    elbow: scene.getObjectByName('elbow'),
-    forearm: scene.getObjectByName('forearm'),
-    wrist: scene.getObjectByName('wrist'),
-    gripper: scene.getObjectByName('gripper'),
-  };
+  const bones = useRef({
+    base: null,
+    shoulder: null,
+    upper_arm: null,
+    elbow: null,
+    forearm: null,
+    wrist: null,
+    gripper: null,
+  });
+
+  // GLTF의 Bone 객체를 가져오기
+  useEffect(() => {
+    bones.current.base = scene.getObjectByName('base');
+    bones.current.shoulder = scene.getObjectByName('shoulder');
+    bones.current.upper_arm = scene.getObjectByName('upper_arm');
+    bones.current.elbow = scene.getObjectByName('elbow');
+    bones.current.forearm = scene.getObjectByName('forearm');
+    bones.current.wrist = scene.getObjectByName('wrist');
+    bones.current.gripper = scene.getObjectByName('gripper');
+
+    // 디버깅을 위해 로드된 본 출력
+    console.log('Loaded Bones:', bones.current);
+  }, [scene]);
 
   // 애니메이션 프레임마다 로봇 관절 데이터를 업데이트
   useFrame(() => {
     if (robotData && robotData.robot_arm_joint) {
       const joints = robotData.robot_arm_joint;
-      if (bones.base) bones.base.rotation.y = joints[0] || 0;
-      if (bones.shoulder) bones.shoulder.rotation.z = joints[1] || 0;
-      if (bones.upper_arm) bones.upper_arm.rotation.x = joints[2] || 0;
-      if (bones.elbow) bones.elbow.rotation.y = joints[3] || 0;
-      if (bones.forearm) bones.forearm.rotation.z = joints[4] || 0;
-      if (bones.wrist) bones.wrist.rotation.x = joints[5] || 0;
-      if (bones.gripper) bones.gripper.rotation.z = joints[6] || 0;
+      if (bones.current.base) bones.current.base.rotation.y = joints[0] || 0;
+      if (bones.current.shoulder) bones.current.shoulder.rotation.z = joints[1] || 0;
+      if (bones.current.upper_arm) bones.current.upper_arm.rotation.x = joints[2] || 0;
+      if (bones.current.elbow) bones.current.elbow.rotation.y = joints[3] || 0;
+      if (bones.current.forearm) bones.current.forearm.rotation.z = joints[4] || 0;
+      if (bones.current.wrist) bones.current.wrist.rotation.x = joints[5] || 0;
+      if (bones.current.gripper) bones.current.gripper.rotation.z = joints[6] || 0;
     }
   });
 
