@@ -130,7 +130,6 @@ function RobotStatusPage() {
             <div>Date: {robotData.date || 'N/A'}</div>
             <div>Time: {robotData.time || 'N/A'}</div>
             <div>AGV ID: {robotData.agv || 'N/A'}</div>
-            <div>AGV Position: {robotData.agv_position || 'N/A'}</div>
             <div>
               Robot Arm Joint:{' '}
               {robotData.robot_arm_joint ? robotData.robot_arm_joint.join(', ') : 'N/A'}
