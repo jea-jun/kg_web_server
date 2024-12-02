@@ -92,18 +92,16 @@ function RobotStatusPage() {
   // 로봇의 위치를 agv_position으로 설정하기 위한 상태
   const [position, setPosition] = useState([0, 0, 0]);
 
-  // API에서 데이터를 주기적으로 가져오기
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get('/api/robot/data');
-        if (response.data.success) {
-          setRobotData(response.data.data);
-          setAgvData(response.data.data.agv || {});
+        if (response.data.success && response.data.data.agv) {
+          const agvData = response.data.data.agv;
           
-          // agv_position으로 모델 위치 설정
-          if (response.data.data.agv && response.data.data.agv.agv_position) {
-            setPosition(response.data.data.agv.agv_position); // [x, y, z] 형태
+          // agv 내부에 agv_position이 있을 경우에만 setPosition
+          if (agvData.agv_position) {
+            setPosition(agvData.agv_position); // [x, y, z] 형태
           }
         } else {
           console.error('Failed to fetch robot/AGV data');
@@ -112,15 +110,16 @@ function RobotStatusPage() {
         console.error('Error fetching robot/AGV data:', error);
       }
     };
-
+  
     // 1초 간격으로 데이터 업데이트
     const interval = setInterval(() => {
       fetchData();
       setForceRender(prev => !prev); // 강제 리렌더링을 위해 상태 반전
     }, 1000);
-
+  
     return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
   }, []);
+  
 
   return (
     <div className="robot-status-container">
@@ -131,6 +130,7 @@ function RobotStatusPage() {
             <div>Date: {robotData.date || 'N/A'}</div>
             <div>Time: {robotData.time || 'N/A'}</div>
             <div>AGV ID: {robotData.agv || 'N/A'}</div>
+            <div>AGV Position: {robotData.agv_position || 'N/A'}</div>
             <div>
               Robot Arm Joint:{' '}
               {robotData.robot_arm_joint ? robotData.robot_arm_joint.join(', ') : 'N/A'}
