@@ -58,7 +58,7 @@ function RobotStatusPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('/data');
+        const response = await axios.get('/api/robot/data');
         if (response.data.success) {
           setRobotData(response.data.data);
           setAgvData(response.data.data.agv || {}); // AGV 데이터 추출
