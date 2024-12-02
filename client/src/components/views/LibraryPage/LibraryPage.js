@@ -1,109 +1,37 @@
-import React, { useEffect, useState, useRef, Suspense } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import axios from 'axios';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
 function RobotModel({ robotData }) {
-  const { scene } = useGLTF('/untitled.glb');
-  
-  const axisRefs = {
-    base: useRef(),
-    shoulder: useRef(),
-    upperArm: useRef(),
-    elbow: useRef(),
-    forearm: useRef(),
-    wrist: useRef(),
-    gripper: useRef(),
-  };
+  // GLB 파일 로드
+  const { scene, animations } = useGLTF('/untitled.glb'); // GLB 파일 경로
 
-  // 로봇 모델의 각 부품에 접근하여 회전 값을 설정
+  // 애니메이션이 있는지 확인하고, 애니메이션을 실행하는 처리
+  const mixerRef = React.useRef(null);
+  
   useEffect(() => {
-    if (scene) {
-      scene.traverse((child) => {
-        if (child.isBone || child.isMesh) {
-          switch (child.name) {
-            case 'base':
-              axisRefs.base.current = child;
-              break;
-            case 'shoulder':
-              axisRefs.shoulder.current = child;
-              break;
-            case 'upper_arm':
-              axisRefs.upperArm.current = child;
-              break;
-            case 'elbow':
-              axisRefs.elbow.current = child;
-              break;
-            case 'forearm':
-              axisRefs.forearm.current = child;
-              break;
-            case 'wrist':
-              axisRefs.wrist.current = child;
-              break;
-            case 'gripper':
-              axisRefs.gripper.current = child;
-              break;
-            default:
-              break;
-          }
-        }
+    if (animations && animations.length) {
+      // 애니메이션을 시작하려면 mixer가 필요합니다.
+      mixerRef.current = new THREE.AnimationMixer(scene);
+      animations.forEach((clip) => {
+        mixerRef.current.clipAction(clip).play();
       });
     }
-  }, [scene]);
+  }, [animations, scene]);
 
-  // robotData가 바뀔 때마다 관절 회전 값 업데이트
-  useEffect(() => {
-    if (robotData && robotData.robot_arm_joint) {
-      const joints = robotData.robot_arm_joint; // 예: [0, 0.5, -1.2, 0.3, 0.8, -0.5, 1.0]
-      
-      // 각 관절에 대한 회전 값 설정
-      if (axisRefs.base.current) {
-        axisRefs.base.current.rotation.y = joints[0] || 0;
-      }
-      if (axisRefs.shoulder.current) {
-        axisRefs.shoulder.current.rotation.x = joints[1] || 0;
-      }
-      if (axisRefs.upperArm.current) {
-        axisRefs.upperArm.current.rotation.x = joints[2] || 0;
-      }
-      if (axisRefs.elbow.current) {
-        axisRefs.elbow.current.rotation.x = joints[3] || 0;
-      }
-      if (axisRefs.forearm.current) {
-        axisRefs.forearm.current.rotation.x = joints[4] || 0;
-      }
-      if (axisRefs.wrist.current) {
-        axisRefs.wrist.current.rotation.x = joints[5] || 0;
-      }
-      if (axisRefs.gripper.current) {
-        axisRefs.gripper.current.rotation.x = joints[6] || 0;
-      }
+  // 프레임마다 애니메이션을 업데이트
+  useFrame((state, delta) => {
+    if (mixerRef.current) {
+      mixerRef.current.update(delta);
     }
-  }, [robotData]); // robotData가 변경될 때마다 회전값 업데이트
-
-  // 첫 로딩 시 애니메이션을 시작하는 훅
-  useEffect(() => {
-    // 애니메이션을 시작할 때 필요한 로직을 작성
-    if (robotData && robotData.robot_arm_joint) {
-      const joints = robotData.robot_arm_joint;
-
-      // 각 관절에 대해 초기 회전값을 애니메이션으로 변경
-      axisRefs.base.current.rotation.y = joints[0] || 0;
-      axisRefs.shoulder.current.rotation.x = joints[1] || 0;
-      axisRefs.upperArm.current.rotation.x = joints[2] || 0;
-      axisRefs.elbow.current.rotation.x = joints[3] || 0;
-      axisRefs.forearm.current.rotation.x = joints[4] || 0;
-      axisRefs.wrist.current.rotation.x = joints[5] || 0;
-      axisRefs.gripper.current.rotation.x = joints[6] || 0;
-    }
-  }, []); // 컴포넌트가 처음 렌더링될 때 한번 실행
+  });
 
   return <primitive object={scene} />;
 }
 
 function RobotStatusPage() {
   const [robotData, setRobotData] = useState({});
-  const [agvData, setAgvData] = useState({});
   const [forceRender, setForceRender] = useState(false); // 렌더링 강제 트리거용 상태
 
   // API에서 데이터를 주기적으로 가져오기
@@ -113,12 +41,11 @@ function RobotStatusPage() {
         const response = await axios.get('/api/robot/data');
         if (response.data.success) {
           setRobotData(response.data.data);
-          setAgvData(response.data.data.agv || {});
         } else {
-          console.error('Failed to fetch robot/AGV data');
+          console.error('Failed to fetch robot data');
         }
       } catch (error) {
-        console.error('Error fetching robot/AGV data:', error);
+        console.error('Error fetching robot data:', error);
       }
     };
 
