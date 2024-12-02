@@ -24,31 +24,24 @@ function RobotModel({ robotData }) {
           switch (child.name) {
             case 'base':
               axisRefs.base.current = child;
-              console.log('Base connected:', axisRefs.base.current);  // 디버깅 로그 추가
               break;
             case 'shoulder':
               axisRefs.shoulder.current = child;
-              console.log('Shoulder connected:', axisRefs.shoulder.current);  // 디버깅 로그 추가
               break;
             case 'upper_arm':
               axisRefs.upperArm.current = child;
-              console.log('UpperArm connected:', axisRefs.upperArm.current);  // 디버깅 로그 추가
               break;
             case 'elbow':
               axisRefs.elbow.current = child;
-              console.log('Elbow connected:', axisRefs.elbow.current);  // 디버깅 로그 추가
               break;
             case 'forearm':
               axisRefs.forearm.current = child;
-              console.log('Forearm connected:', axisRefs.forearm.current);  // 디버깅 로그 추가
               break;
             case 'wrist':
               axisRefs.wrist.current = child;
-              console.log('Wrist connected:', axisRefs.wrist.current);  // 디버깅 로그 추가
               break;
             case 'gripper':
               axisRefs.gripper.current = child;
-              console.log('Gripper connected:', axisRefs.gripper.current);  // 디버깅 로그 추가
               break;
             default:
               break;
@@ -140,13 +133,25 @@ function RobotStatusPage() {
           <div>No data available</div>
         )}
       </div>
+
+      {/* 카메라 피드 렌더링 */}
       <div className="camera-container">
         <h1>Camera View</h1>
-        {/* 카메라 피드가 포함될 HTML */}
-        <div className="camera-feed">
-          <img src="/path/to/camera/feed" alt="Camera Feed" />
-        </div>
+        {robotData.camera ? (
+          <div className="camera-feed">
+            {/* base64 이미지 출력 */}
+            <img 
+              src={`data:image/jpeg;base64,${robotData.camera}`} 
+              alt="Camera Feed" 
+              style={{ width: '100%', height: 'auto' }} 
+            />
+          </div>
+        ) : (
+          <div>No camera data available</div>
+        )}
       </div>
+
+      {/* 3D 로봇 모델 */}
       <div className="blender-model-container">
         <h1>3D Robot Model</h1>
         <Canvas camera={{ position: [0, 6, 10], fov: 50 }}>
