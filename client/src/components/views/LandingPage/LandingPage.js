@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import Axios from 'axios';
 import { Icon, Col, Card, Row } from 'antd';
-import CheckBox from './Sections/CheckBox';
-import RadioBox from './Sections/RadioBox';
 import { category, decadeRanges } from './Sections/Datas';
 import SearchFeature from './Sections/SearchFeature';
 import './Sections/LandingPage.css';
@@ -10,40 +8,33 @@ import './Sections/LandingPage.css';
 const { Meta } = Card;
 
 function LandingPage() {
-    const [Products, setProducts] = useState([])
-    const [Skip, setSkip] = useState(0)
-    const [Limit, setLimit] = useState(8)
-    const [PostSize, setPostSize] = useState()
-    const [SearchTerms, setSearchTerms] = useState("")
+    const [Products, setProducts] = useState([]);
+    const [Skip, setSkip] = useState(0);
+    const [Limit, setLimit] = useState(8);
+    const [PostSize, setPostSize] = useState();
+    const [SearchTerms, setSearchTerms] = useState('');
     const [selectedCard, setSelectedCard] = useState(null);
-    const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
     const [selectedDateTime, setSelectedDateTime] = useState({ date: '', time: '' });
-    
-
-    const [Filters, setFilters] = useState({
-        category: [],
-        decadeRanges: []
-    })
+    const [Filters, setFilters] = useState({ category: [], decadeRanges: [] });
+    const [showReservationForm, setShowReservationForm] = useState(null); // 예약 입력창을 표시할 카드 상태
+    const [isReserved, setIsReserved] = useState([]); // 예약 여부 상태
 
     useEffect(() => {
-        
-                const variables = {
-                    pageno: Skip,
-                    displaylines: Limit,
-                }
-        
-                getProducts(variables)
-                document.addEventListener('click', handleOutsideClick);
-                return () => {
-                document.removeEventListener('click', handleOutsideClick);
-            };
-    }, [])
+        const variables = {
+            pageno: Skip,
+            displaylines: Limit,
+        };
+        getProducts(variables);
+        document.addEventListener('click', handleOutsideClick);
+        return () => {
+            document.removeEventListener('click', handleOutsideClick);
+        };
+    }, []);
 
+    // 서버에서 제품 정보 받아오기
     const getProducts = (variables) => {
-        // GET 요청 시에는 params로 쿼리 파라미터를 전달
         Axios.get('/api/book/getBooks', { params: variables })
             .then(response => {
-                // 서버에서 데이터를 받아오는 로직
                 let xmlData = response.data.data;
 
                 // XML 데이터가 문자열일 때만 파싱 수행
@@ -70,8 +61,8 @@ function LandingPage() {
                                 contents: getValueByName("목차").trim(),
                                 publishYear: getValueByName("발행년도").trim(),
                                 title: (getValueByName("자료명") || getValueByName("기사명") || getValueByName("저널명") || getValueByName("수록지명"))
-        .replace(/\s*\/\s*$/, '')
-        .trim(),
+                                    .replace(/\s*\/\s*$/, '')
+                                    .trim(),
                             };
                         });
                         setProducts(products);
@@ -90,21 +81,25 @@ function LandingPage() {
                 setProducts([]);
             });
     };
-    const sendDateTimeToServer = () => {
+
+    // 예약 날짜와 시간 서버로 전송
+    const sendDateTimeToServer = (bookControlNumber) => {
         const { date, time } = selectedDateTime;
-    
+
         if (!date || !time) {
             alert("날짜와 시간을 모두 입력해주세요.");
             return;
         }
-    
-        const payload = { date, time };
-    
+
+        const payload = { date, time, controlNumber: bookControlNumber };
+
         Axios.post('/api/robot/DateTime', payload)
             .then((response) => {
                 if (response.data.success) {
                     console.log("DateTime sent successfully:", response.data);
                     alert("날짜와 시간이 성공적으로 전송되었습니다.");
+                    setIsReserved((prevReserved) => [...prevReserved, bookControlNumber]); // 예약된 카드로 상태 업데이트
+                    setShowReservationForm(null); // 예약 후 입력폼 숨기기
                 } else {
                     console.error("Failed to send DateTime:", response.data.message);
                     alert("전송에 실패했습니다.");
@@ -115,32 +110,27 @@ function LandingPage() {
                 alert("서버 전송 중 오류가 발생했습니다.");
             });
     };
-    
 
-
-    
-    const onLoadMore = () => {
-        let skip = Skip + Limit;
-
-        const variables = {
-            skip: skip,
-            limit: Limit,
-            loadMore: true,
-            filters: Filters,
-            searchTerm: SearchTerms
-        }
-        getProducts(variables)
-        setSkip(skip)
-    }
-    
     // 외부 클릭 감지 핸들러
     const handleOutsideClick = (e) => {
         if (!e.target.closest('.card')) {
             setSelectedCard(null); // 외부를 클릭하면 선택 해제
         }
     };
-    
+
+    // 카드 클릭 시 예약 입력 폼을 토글
+    const toggleReservationForm = (bookControlNumber) => {
+        if (showReservationForm === bookControlNumber) {
+            setShowReservationForm(null); // 이미 보이면 숨김
+        } else {
+            setShowReservationForm(bookControlNumber); // 아니면 해당 카드 예약 입력창 보이기
+        }
+    };
+
+    // 카드 렌더링
     const renderCards = Products.map((product, index) => {
+        const isCardReserved = isReserved.includes(product.controlNumber); // 해당 카드가 예약되었는지 확인
+
         return (
             <Col key={index} lg={6} md={8} xs={24}>
                 <Card
@@ -162,189 +152,132 @@ function LandingPage() {
                             </div>
                         }
                     />
-    
-                    {/* 시간 선택창 */}
-                    {selectedCard === index && (
-                    <div
-                        className="time-picker-container"
-                        onClick={(e) => e.stopPropagation()} // 부모로 이벤트 전파 방지
-                    >
-                        <label>
-                            Date:
-                            <input
-                                type="date"
-                                value={selectedDateTime.date || ''}
-                                onChange={(e) => {
-                                    const value = e.target.value; // 즉시 값 저장
-                                    setSelectedDateTime((prev) => ({
-                                        ...prev,
-                                        date: value,
-                                    }));
-                                }}
-                                className="date-input"
-                            />
-                        </label>
-                        <label>
-                            Time:
-                            <input
-                                type="time"
-                                value={selectedDateTime.time || ''}
-                                onChange={(e) => {
-                                    const value = e.target.value; // 즉시 값 저장
-                                    setSelectedDateTime((prev) => ({
-                                        ...prev,
-                                        time: value,
-                                    }));
-                                }}
-                                className="time-input"
-                            />
-                        </label>
-                        <button
-                            onClick={async () => {
-                                try {
-                                    await sendDateTimeToServer();
-                                    setSelectedDateTime({ date: '', time: '' });
-                                    setSelectedCard(null);
-                                } catch (error) {
-                                    console.error("Failed to send date and time:", error);
-                                }
-                            }}
-                            className="reservation-button"
-                        >
-                            예약하기
-                        </button>
-                    </div>
 
+                    {/* 예약된 카드에 '예약됨' 텍스트 표시 */}
+                    {isCardReserved && (
+                        <div className="reservation-status">예약됨</div>
+                    )}
+
+                    {/* 예약 입력 폼, 예약되지 않은 카드에서만 보이도록 */}
+                    {showReservationForm === product.controlNumber && !isCardReserved && (
+                        <div
+                            className="time-picker-container"
+                            onClick={(e) => e.stopPropagation()} // 부모로 이벤트 전파 방지
+                        >
+                            <label>
+                                Date:
+                                <input
+                                    type="date"
+                                    value={selectedDateTime.date || ''}
+                                    onChange={(e) => {
+                                        const value = e.target.value; // 즉시 값 저장
+                                        setSelectedDateTime((prev) => ({
+                                            ...prev,
+                                            date: value,
+                                        }));
+                                    }}
+                                    className="date-input"
+                                />
+                            </label>
+                            <label>
+                                Time:
+                                <input
+                                    type="time"
+                                    value={selectedDateTime.time || ''}
+                                    onChange={(e) => {
+                                        const value = e.target.value; // 즉시 값 저장
+                                        setSelectedDateTime((prev) => ({
+                                            ...prev,
+                                            time: value,
+                                        }));
+                                    }}
+                                    className="time-input"
+                                />
+                            </label>
+                            <button
+                                onClick={() => sendDateTimeToServer(product.controlNumber)} // 해당 카드 제어번호 전송
+                                className="reservation-button"
+                            >
+                                예약하기
+                            </button>
+                        </div>
                     )}
                 </Card>
             </Col>
-    );
-});
+        );
+    });
 
-
+    // 필터 및 검색 기능
     const showFilteredResults = (filters) => {
-
         const variables = {
             skip: 0,
             limit: Limit,
             filters: filters
-
-        }
-        getProducts(variables)
-        setSkip(0)
-
-    }
-
-    const handledecadeRanges = (value) => {
-        const data = decadeRanges;
-        let array = [];
-
-        for (let key in data) {
-
-            if (data[key]._id === parseInt(value, 10)) {
-                array = data[key].array;
-            }
-        }
-        console.log('array', array)
-        return array
-    }
+        };
+        getProducts(variables);
+        setSkip(0);
+    };
 
     const handleFilters = (filters, category) => {
-
-        const newFilters = { ...Filters }
-
-        newFilters[category] = filters
-
-        if (category === "decadeRanges") {
-            let decadeRangesValues = handledecadeRanges(filters)
-            newFilters[category] = decadeRangesValues
-
-        }
-
-        console.log(newFilters)
-
-        showFilteredResults(newFilters)
-        setFilters(newFilters)
-    }
+        const newFilters = { ...Filters };
+        newFilters[category] = filters;
+        showFilteredResults(newFilters);
+        setFilters(newFilters);
+    };
 
     const updateSearchTerms = (newSearchTerm) => {
-
         const variables = {
             pageno: 1,
             displaylines: 12,
             search: `${category[Filters.category].name}, ${newSearchTerm}`
-
-        }
-
-        setSkip(0)
-        setSearchTerms(newSearchTerm)
-
-        getProducts(variables)
-    }
-
+        };
+        setSkip(0);
+        setSearchTerms(newSearchTerm);
+        getProducts(variables);
+    };
 
     return (
         <div style={{ width: '75%', margin: '3rem auto' }}>
             <div style={{ textAlign: 'center' }}>
-                <h2> 지식의 공간 <Icon type="rocket" />  </h2>
+                <h2>지식의 공간 <Icon type="rocket" /></h2>
             </div>
 
-            
-            {/* Search  */}
+            {/* Search */}
             <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem auto' }}>
-
-                <SearchFeature
-                    refreshFunction={updateSearchTerms}
-                />
-
+                <SearchFeature refreshFunction={updateSearchTerms} />
             </div>
 
-
-            {/* Filter  */}
+            {/* Filter */}
             <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem auto' }}>
                 <Row gutter={[16, 16]}>
-                    <Col lg={12} xs={24} >
-                        <CheckBox
-                            list={category}
-                            handleFilters={filters => handleFilters(filters, "category")}
-                        />
-                    </Col>
                     <Col lg={12} xs={24}>
-                        <RadioBox
-                            list={decadeRanges}
-                            handleFilters={filters => handleFilters(filters, "decadeRanges")}
-                        />
+                        {/* 필터 항목들 */}
                     </Col>
                 </Row>
             </div>
 
-
-
-            {Products.length === 0 ?
+            {/* 제품 목록 */}
+            {Products.length === 0 ? (
                 <div style={{ display: 'flex', height: '300px', justifyContent: 'center', alignItems: 'center' }}>
                     <h2>No book yet...</h2>
-                </div> :
+                </div>
+            ) : (
                 <div>
                     <Row gutter={[16, 16]}>
-
                         {renderCards}
-
                     </Row>
-
-
                 </div>
-            }
+            )}
+
             <br /><br />
 
-            {PostSize >= Limit &&
+            {PostSize >= Limit && (
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <button onClick={onLoadMore}>Load More</button>
+                    <button onClick={() => setSkip(Skip + Limit)}>Load More</button>
                 </div>
-            }
-
-
+            )}
         </div>
-    )
+    );
 }
 
-export default LandingPage
+export default LandingPage;
