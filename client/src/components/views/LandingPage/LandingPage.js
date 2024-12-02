@@ -36,23 +36,6 @@ function LandingPage() {
         };
     }, []);
 
-    // 예약 상태 확인 함수
-    const checkReservationStatus = (controlNumber) => {
-        Axios.get(`/api/robot/data`, { params: { controlNumber } })
-            .then(response => {
-                if (response.data && response.data.reservationInfo) {
-                    const { isReserved } = response.data.reservationInfo;
-                    setReservationStatus(prevState => ({
-                        ...prevState,
-                        [controlNumber]: isReserved
-                    }));
-                }
-            })
-            .catch(error => {
-                console.error("예약 상태 확인 오류:", error.message || error);
-            });
-    };
-
     const getProducts = (variables) => {
         Axios.get('/api/book/getBooks', { params: variables })
             .then(response => {
@@ -86,10 +69,6 @@ function LandingPage() {
                             };
                         });
                         setProducts(products);
-                        // 제품마다 예약 상태 확인
-                        products.forEach(product => {
-                            checkReservationStatus(product.controlNumber);
-                        });
                     } else {
                         console.error("No records found in the XML response");
                         setProducts([]);
@@ -126,7 +105,6 @@ function LandingPage() {
         Axios.post('/api/robot/DateTime', payload)
             .then((response) => {
                 if (response.data.success) {
-                    console.log("DateTime sent successfully:", response.data);
                     alert("날짜와 시간이 성공적으로 전송되었습니다.");
                     setReservationStatus(prevState => ({
                         ...prevState,
@@ -237,6 +215,13 @@ function LandingPage() {
                             >
                                 예약하기
                             </button>
+                        </div>
+                    )}
+
+                    {/* 예약이 완료된 경우 "예약중" 표시 */}
+                    {selectedCard === index && reservationStatus[product.controlNumber] && (
+                        <div className="reservation-status">
+                            <p>예약중</p>
                         </div>
                     )}
                 </Card>
