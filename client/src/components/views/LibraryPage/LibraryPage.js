@@ -18,14 +18,9 @@ function RobotModel({ robotData }) {
 
   // 로봇 모델의 각 부품에 접근하여 회전 값을 설정
   useEffect(() => {
-    // 모델 로드 시 한 번 콘솔에 scene 요소 출력
-    console.log('Loaded Robot Model Scene:', scene);
-
-    // 접근 가능한 요소만 로그로 출력 및 참조 저장
     if (scene) {
       scene.traverse((child) => {
         if (child.isBone || child.isMesh) {
-          console.log('Accessible Child:', child.name, child);
           switch (child.name) {
             case 'base':
               axisRefs.base.current = child;
@@ -62,13 +57,34 @@ function RobotModel({ robotData }) {
       const joints = robotData.robot_arm_joint; // 예: [0, 0.5, -1.2, 0.3, 0.8, -0.5, 1.0]
       
       // 각 관절에 대한 회전 값 설정
-      if (axisRefs.base.current) axisRefs.base.current.rotation.y = joints[0] || 0;
-      if (axisRefs.shoulder.current) axisRefs.shoulder.current.rotation.x = joints[1] || 0;
-      if (axisRefs.upperArm.current) axisRefs.upperArm.current.rotation.x = joints[2] || 0;
-      if (axisRefs.elbow.current) axisRefs.elbow.current.rotation.x = joints[3] || 0;
-      if (axisRefs.forearm.current) axisRefs.forearm.current.rotation.x = joints[4] || 0;
-      if (axisRefs.wrist.current) axisRefs.wrist.current.rotation.x = joints[5] || 0;
-      if (axisRefs.gripper.current) axisRefs.gripper.current.rotation.x = joints[6] || 0;
+      if (axisRefs.base.current) {
+        axisRefs.base.current.rotation.y = joints[0] || 0;
+        console.log('Base rotation:', axisRefs.base.current.rotation.y);  // 로그 추가
+      }
+      if (axisRefs.shoulder.current) {
+        axisRefs.shoulder.current.rotation.x = joints[1] || 0;
+        console.log('Shoulder rotation:', axisRefs.shoulder.current.rotation.x);  // 로그 추가
+      }
+      if (axisRefs.upperArm.current) {
+        axisRefs.upperArm.current.rotation.x = joints[2] || 0;
+        console.log('UpperArm rotation:', axisRefs.upperArm.current.rotation.x);  // 로그 추가
+      }
+      if (axisRefs.elbow.current) {
+        axisRefs.elbow.current.rotation.x = joints[3] || 0;
+        console.log('Elbow rotation:', axisRefs.elbow.current.rotation.x);  // 로그 추가
+      }
+      if (axisRefs.forearm.current) {
+        axisRefs.forearm.current.rotation.x = joints[4] || 0;
+        console.log('Forearm rotation:', axisRefs.forearm.current.rotation.x);  // 로그 추가
+      }
+      if (axisRefs.wrist.current) {
+        axisRefs.wrist.current.rotation.x = joints[5] || 0;
+        console.log('Wrist rotation:', axisRefs.wrist.current.rotation.x);  // 로그 추가
+      }
+      if (axisRefs.gripper.current) {
+        axisRefs.gripper.current.rotation.x = joints[6] || 0;
+        console.log('Gripper rotation:', axisRefs.gripper.current.rotation.x);  // 로그 추가
+      }
     }
   });
 
