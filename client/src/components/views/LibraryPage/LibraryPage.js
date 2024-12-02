@@ -105,7 +105,7 @@ function RobotStatusPage() {
     e.preventDefault();
 
     try {
-      const response = await axios.post('/robot-control', {
+      const response = await axios.post('/api/robot/robot-control', {
         agv,
         robot_arm: robotArm,
       });
