@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import Axios from 'axios';
 import { Icon, Col, Card, Row } from 'antd';
+import CheckBox from './Sections/CheckBox';
+import RadioBox from './Sections/RadioBox';
 import { category, decadeRanges } from './Sections/Datas';
 import SearchFeature from './Sections/SearchFeature';
 import './Sections/LandingPage.css';
@@ -8,36 +10,37 @@ import './Sections/LandingPage.css';
 const { Meta } = Card;
 
 function LandingPage() {
-    const [Products, setProducts] = useState([]);
-    const [Skip, setSkip] = useState(0);
-    const [Limit, setLimit] = useState(8);
-    const [PostSize, setPostSize] = useState();
-    const [SearchTerms, setSearchTerms] = useState('');
+    const [Products, setProducts] = useState([])
+    const [Skip, setSkip] = useState(0)
+    const [Limit, setLimit] = useState(8)
+    const [PostSize, setPostSize] = useState()
+    const [SearchTerms, setSearchTerms] = useState("")
     const [selectedCard, setSelectedCard] = useState(null);
+    const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
     const [selectedDateTime, setSelectedDateTime] = useState({ date: '', time: '' });
-    const [Filters, setFilters] = useState({ category: [], decadeRanges: [] });
-    const [showReservationForm, setShowReservationForm] = useState(null); // 예약 입력창을 표시할 카드 상태
-    const [isReserved, setIsReserved] = useState([]); // 예약 여부 상태
+    const [Filters, setFilters] = useState({
+        category: [],
+        decadeRanges: []
+    });
 
     useEffect(() => {
         const variables = {
             pageno: Skip,
             displaylines: Limit,
-        };
-        getProducts(variables);
+        }
+
+        getProducts(variables)
         document.addEventListener('click', handleOutsideClick);
         return () => {
             document.removeEventListener('click', handleOutsideClick);
         };
-    }, []);
+    }, [])
 
-    // 서버에서 제품 정보 받아오기
     const getProducts = (variables) => {
         Axios.get('/api/book/getBooks', { params: variables })
             .then(response => {
                 let xmlData = response.data.data;
 
-                // XML 데이터가 문자열일 때만 파싱 수행
                 if (typeof xmlData === 'string' && xmlData.startsWith('<?xml')) {
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(xmlData, "application/xml");
@@ -82,8 +85,7 @@ function LandingPage() {
             });
     };
 
-    // 예약 날짜와 시간 서버로 전송
-    const sendDateTimeToServer = (bookControlNumber) => {
+    const sendDateTimeToServer = (controlNumber) => {
         const { date, time } = selectedDateTime;
 
         if (!date || !time) {
@@ -91,15 +93,17 @@ function LandingPage() {
             return;
         }
 
-        const payload = { date, time, controlNumber: bookControlNumber };
+        const payload = {
+            date,
+            time,
+            controlNumber, // 제어번호 추가
+        };
 
         Axios.post('/api/robot/DateTime', payload)
             .then((response) => {
                 if (response.data.success) {
                     console.log("DateTime sent successfully:", response.data);
                     alert("날짜와 시간이 성공적으로 전송되었습니다.");
-                    setIsReserved((prevReserved) => [...prevReserved, bookControlNumber]); // 예약된 카드로 상태 업데이트
-                    setShowReservationForm(null); // 예약 후 입력폼 숨기기
                 } else {
                     console.error("Failed to send DateTime:", response.data.message);
                     alert("전송에 실패했습니다.");
@@ -111,6 +115,20 @@ function LandingPage() {
             });
     };
 
+    const onLoadMore = () => {
+        let skip = Skip + Limit;
+
+        const variables = {
+            skip: skip,
+            limit: Limit,
+            loadMore: true,
+            filters: Filters,
+            searchTerm: SearchTerms
+        }
+        getProducts(variables)
+        setSkip(skip)
+    }
+
     // 외부 클릭 감지 핸들러
     const handleOutsideClick = (e) => {
         if (!e.target.closest('.card')) {
@@ -118,19 +136,7 @@ function LandingPage() {
         }
     };
 
-    // 카드 클릭 시 예약 입력 폼을 토글
-    const toggleReservationForm = (bookControlNumber) => {
-        if (showReservationForm === bookControlNumber) {
-            setShowReservationForm(null); // 이미 보이면 숨김
-        } else {
-            setShowReservationForm(bookControlNumber); // 아니면 해당 카드 예약 입력창 보이기
-        }
-    };
-
-    // 카드 렌더링
     const renderCards = Products.map((product, index) => {
-        const isCardReserved = isReserved.includes(product.controlNumber); // 해당 카드가 예약되었는지 확인
-
         return (
             <Col key={index} lg={6} md={8} xs={24}>
                 <Card
@@ -153,13 +159,8 @@ function LandingPage() {
                         }
                     />
 
-                    {/* 예약된 카드에 '예약됨' 텍스트 표시 */}
-                    {isCardReserved && (
-                        <div className="reservation-status">예약됨</div>
-                    )}
-
-                    {/* 예약 입력 폼, 예약되지 않은 카드에서만 보이도록 */}
-                    {showReservationForm === product.controlNumber && !isCardReserved && (
+                    {/* 시간 선택창 */}
+                    {selectedCard === index && (
                         <div
                             className="time-picker-container"
                             onClick={(e) => e.stopPropagation()} // 부모로 이벤트 전파 방지
@@ -195,7 +196,15 @@ function LandingPage() {
                                 />
                             </label>
                             <button
-                                onClick={() => sendDateTimeToServer(product.controlNumber)} // 해당 카드 제어번호 전송
+                                onClick={async () => {
+                                    try {
+                                        await sendDateTimeToServer(product.controlNumber); // 제어번호 함께 전송
+                                        setSelectedDateTime({ date: '', time: '' });
+                                        setSelectedCard(null);
+                                    } catch (error) {
+                                        console.error("Failed to send date and time:", error);
+                                    }
+                                }}
                                 className="reservation-button"
                             >
                                 예약하기
@@ -207,77 +216,105 @@ function LandingPage() {
         );
     });
 
-    // 필터 및 검색 기능
     const showFilteredResults = (filters) => {
         const variables = {
             skip: 0,
             limit: Limit,
             filters: filters
-        };
-        getProducts(variables);
-        setSkip(0);
-    };
+        }
+        getProducts(variables)
+        setSkip(0)
+    }
+
+    const handledecadeRanges = (value) => {
+        const data = decadeRanges;
+        let array = [];
+
+        for (let key in data) {
+            if (data[key]._id === parseInt(value, 10)) {
+                array = data[key].array;
+            }
+        }
+        return array;
+    }
 
     const handleFilters = (filters, category) => {
-        const newFilters = { ...Filters };
-        newFilters[category] = filters;
-        showFilteredResults(newFilters);
-        setFilters(newFilters);
-    };
+        const newFilters = { ...Filters }
+
+        newFilters[category] = filters
+
+        if (category === "decadeRanges") {
+            let decadeRangesValues = handledecadeRanges(filters)
+            newFilters[category] = decadeRangesValues
+        }
+
+        showFilteredResults(newFilters)
+        setFilters(newFilters)
+    }
 
     const updateSearchTerms = (newSearchTerm) => {
         const variables = {
             pageno: 1,
             displaylines: 12,
             search: `${category[Filters.category].name}, ${newSearchTerm}`
-        };
-        setSkip(0);
-        setSearchTerms(newSearchTerm);
-        getProducts(variables);
-    };
+        }
+
+        setSkip(0)
+        setSearchTerms(newSearchTerm)
+
+        getProducts(variables)
+    }
 
     return (
         <div style={{ width: '75%', margin: '3rem auto' }}>
             <div style={{ textAlign: 'center' }}>
-                <h2>지식의 공간 <Icon type="rocket" /></h2>
+                <h2> 지식의 공간 <Icon type="rocket" />  </h2>
             </div>
 
-            {/* Search */}
+            {/* Search  */}
             <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem auto' }}>
-                <SearchFeature refreshFunction={updateSearchTerms} />
+                <SearchFeature
+                    refreshFunction={updateSearchTerms}
+                />
             </div>
 
-            {/* Filter */}
+            {/* Filter  */}
             <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem auto' }}>
                 <Row gutter={[16, 16]}>
+                    <Col lg={12} xs={24} >
+                        <CheckBox
+                            list={category}
+                            handleFilters={filters => handleFilters(filters, "category")}
+                        />
+                    </Col>
                     <Col lg={12} xs={24}>
-                        {/* 필터 항목들 */}
+                        <RadioBox
+                            list={decadeRanges}
+                            handleFilters={filters => handleFilters(filters, "decadeRanges")}
+                        />
                     </Col>
                 </Row>
             </div>
 
-            {/* 제품 목록 */}
-            {Products.length === 0 ? (
+            {Products.length === 0 ?
                 <div style={{ display: 'flex', height: '300px', justifyContent: 'center', alignItems: 'center' }}>
                     <h2>No book yet...</h2>
-                </div>
-            ) : (
+                </div> :
                 <div>
                     <Row gutter={[16, 16]}>
                         {renderCards}
                     </Row>
                 </div>
-            )}
-
+            }
             <br /><br />
 
-            {PostSize >= Limit && (
+            {PostSize >= Limit &&
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <button onClick={() => setSkip(Skip + Limit)}>Load More</button>
+                    <button onClick={onLoadMore}>Load More</button>
                 </div>
-            )}
+            }
         </div>
-    );
+    )
 }
 
 export default LandingPage;
