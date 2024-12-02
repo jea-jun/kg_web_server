@@ -51,8 +51,8 @@ function RobotModel({ robotData }) {
     }
   }, [scene]);
 
-  // 로봇의 관절 회전 값 업데이트 (매 프레임마다 실행)
-  useFrame(() => {
+  // 로봇의 관절 회전 값 업데이트
+  useEffect(() => {
     if (robotData && robotData.robot_arm_joint) {
       const joints = robotData.robot_arm_joint; // 예: [0, 0.5, -1.2, 0.3, 0.8, -0.5, 1.0]
       
@@ -79,7 +79,7 @@ function RobotModel({ robotData }) {
         axisRefs.gripper.current.rotation.x = joints[6] || 0;
       }
     }
-  });
+  }, [robotData]); // robotData가 변경될 때마다 관절 업데이트
 
   return <primitive object={scene} />;
 }
