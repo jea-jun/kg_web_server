@@ -23,7 +23,7 @@
 
 ## 프로젝트 사용 예시
 도서관 회원이 웹 애플리케이션에 접속하여 도서를 예약하면 서버가 해당 도서의 예약 가능 여부를 확인합니다. 예약이 가능한 경우, **로봇에게 최소한의 데이터를 전달**하여 예약 절차를 진행하게 되며, 이때 로봇은 도서관 내에서 지정된 위치로 이동하여 작업을 수행합니다. 
-![Alt text](https://github.com/jujujaejun/kg_web_server/blob/main/home.png?raw=true)
+![Alt text](https://github.com/jujujaejun/kg_web_server/blob/main/home1.png?raw=true)
 ![Alt text](https://github.com/jujujaejun/kg_web_server/blob/main/reservation.png?raw=true)
 ![Alt text](https://github.com/jujujaejun/kg_web_server/blob/main/send.png?raw=true)
 
