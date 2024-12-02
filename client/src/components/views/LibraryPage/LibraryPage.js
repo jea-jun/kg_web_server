@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useRef, Suspense } from 'react';
-import axios from 'axios';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
 function RobotModel({ robotData }) {
   const { scene } = useGLTF('/untitled.glb');
-  
+
   const axisRefs = {
     base: useRef(),
     shoulder: useRef(),
@@ -54,7 +53,7 @@ function RobotModel({ robotData }) {
   // robotData가 바뀔 때마다 관절 회전 값 업데이트
   useEffect(() => {
     if (robotData && robotData.robot_arm_joint) {
-      const joints = robotData.robot_arm_joint; // 예: [0, 0.5, -1.2, 0.3, 0.8, -0.5, 1.0]
+      const joints = robotData.robot_arm_joint; // 예: [180, 20, 180, 20, 180, 20, 180]
       
       // 각 관절에 대한 회전 값 설정
       if (axisRefs.base.current) {
@@ -85,72 +84,36 @@ function RobotModel({ robotData }) {
 }
 
 function RobotStatusPage() {
-  const [robotData, setRobotData] = useState({});
-  const [agvData, setAgvData] = useState({});
-  const [forceRender, setForceRender] = useState(false); // 렌더링 강제 트리거용 상태
+  const [robotData, setRobotData] = useState({
+    robot_arm_joint: [180, 20, 180, 20, 180, 20, 180], // 초기값 설정 (홀수 인덱스는 180, 짝수 인덱스는 20)
+  });
 
-  // API에서 데이터를 주기적으로 가져오기
+  // 임의의 값으로 robotData 업데이트 (홀수는 180, 짝수는 20)
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('/api/robot/data');
-        if (response.data.success) {
-          setRobotData(response.data.data);
-          setAgvData(response.data.data.agv || {});
-        } else {
-          console.error('Failed to fetch robot/AGV data');
-        }
-      } catch (error) {
-        console.error('Error fetching robot/AGV data:', error);
-      }
-    };
-
-    // 1초 간격으로 데이터 업데이트
     const interval = setInterval(() => {
-      fetchData();
-      setForceRender(prev => !prev); // 강제 리렌더링을 위해 상태 반전
+      setRobotData({
+        robot_arm_joint: [
+          180,  // base
+          20,   // shoulder
+          180,  // upper arm
+          20,   // elbow
+          180,  // forearm
+          20,   // wrist
+          180,  // gripper
+        ]
+      });
     }, 1000);
 
-    return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
+    return () => clearInterval(interval); // 1초마다 업데이트
   }, []);
 
   return (
     <div className="robot-status-container">
-      <div className="text-container">
-        <h1>Robot Status</h1>
-        {robotData ? (
-          <div>
-            <div>Date: {robotData.date || 'N/A'}</div>
-            <div>Time: {robotData.time || 'N/A'}</div>
-            <div>AGV ID: {robotData.agv || 'N/A'}</div>
-            <div>
-              Robot Arm Joint:{' '}
-              {robotData.robot_arm_joint ? robotData.robot_arm_joint.join(', ') : 'N/A'}
-            </div>
-            <div>Other Data: {JSON.stringify(robotData.otherData) || 'N/A'}</div>
-          </div>
-        ) : (
-          <div>No data available</div>
-        )}
+      <h1>Robot Status</h1>
+      <div>
+        <div>Robot Arm Joint: {robotData.robot_arm_joint.join(', ')}</div>
       </div>
 
-      {/* 카메라 피드 렌더링 */}
-      <div className="camera-container">
-        <h1>Camera View</h1>
-        {robotData.camera ? (
-          <div className="camera-feed">
-            <img 
-              src={`data:image/jpeg;base64,${robotData.camera}`} 
-              alt="Camera Feed" 
-              style={{ width: '100%', height: 'auto' }} 
-            />
-          </div>
-        ) : (
-          <div>No camera data available</div>
-        )}
-      </div>
-
-      {/* 3D 로봇 모델 */}
       <div className="blender-model-container">
         <h1>3D Robot Model</h1>
         <Canvas camera={{ position: [0, 6, 10], fov: 50 }}>
