@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
-function RobotModel({ robotData, position }) {
+function RobotModel({ robotData }) {
   const { scene } = useGLTF('/untitled.glb');
   
   const axisRefs = {
@@ -81,14 +81,16 @@ function RobotModel({ robotData, position }) {
     }
   }, [robotData]); // robotData가 변경될 때마다 회전값 업데이트
 
-  return <primitive object={scene} position={position} />;
+  return <primitive object={scene} />;
 }
 
 function RobotStatusPage() {
   const [robotData, setRobotData] = useState({});
   const [agvData, setAgvData] = useState({});
   const [forceRender, setForceRender] = useState(false); // 렌더링 강제 트리거용 상태
-  const [position, setPosition] = useState([0, 0, 0]); // 로봇 위치 상태
+
+  // 로봇의 위치를 agv_position으로 설정하기 위한 상태
+  const [position, setPosition] = useState([0, 0, 0]);
 
   // API에서 데이터를 주기적으로 가져오기
   useEffect(() => {
@@ -99,10 +101,9 @@ function RobotStatusPage() {
           setRobotData(response.data.data);
           setAgvData(response.data.data.agv || {});
           
-          // agv의 위치 값이 존재하면 position 상태 업데이트
-          if (response.data.data.agv) {
-            const { x, y, z } = response.data.data.agv;
-            setPosition([x, y, z]);
+          // agv_position으로 모델 위치 설정
+          if (response.data.data.agv && response.data.data.agv.agv_position) {
+            setPosition(response.data.data.agv.agv_position); // [x, y, z] 형태
           }
         } else {
           console.error('Failed to fetch robot/AGV data');
@@ -164,6 +165,7 @@ function RobotStatusPage() {
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1.0} />
           <Suspense fallback={null}>
+            {/* 로봇 모델을 지정된 위치로 렌더링 */}
             <RobotModel robotData={robotData} position={position} />
           </Suspense>
           <OrbitControls />

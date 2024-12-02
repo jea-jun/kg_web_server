@@ -7,7 +7,8 @@ BASE_URL = "https://kgwebserver-14978e851dae.herokuapp.com/api/robot"
 robot_status = {
     "date": time.strftime("%Y-%m-%d"),  # 현재 날짜
     "time": time.strftime("%H:%M:%S"),  # 현재 시간
-    "agv": "AGV_ID_001",  # AGV 이름 또는 ID
+    "agv": "AGV_ID_001",
+    "agv_position": (0.,9,0),
     "robot_arm_joint": [0, 0.5, -91.2, 90.3, 0.8, -0.5, 1.0],  # 관절 상태
     "otherData": {
         "speed": 1.5,  # 기타 데이터 예시: 속도
