@@ -14,10 +14,9 @@ function RobotModel({ robotData }) {
     forearm: useRef(),
     wrist: useRef(),
     gripper: useRef(),
-    gripperLeft: useRef(),
-    gripperRight: useRef(),
   };
 
+  // 로봇 모델의 각 부품에 접근하여 회전 값을 설정
   useEffect(() => {
     // 모델 로드 시 한 번 콘솔에 scene 요소 출력
     console.log('Loaded Robot Model Scene:', scene);
@@ -49,12 +48,6 @@ function RobotModel({ robotData }) {
             case 'gripper':
               axisRefs.gripper.current = child;
               break;
-            case 'gripper_left':
-              axisRefs.gripperLeft.current = child;
-              break;
-            case 'gripper_right':
-              axisRefs.gripperRight.current = child;
-              break;
             default:
               break;
           }
@@ -63,10 +56,12 @@ function RobotModel({ robotData }) {
     }
   }, [scene]);
 
+  // 로봇의 관절 회전 값 업데이트 (매 프레임마다 실행)
   useFrame(() => {
     if (robotData && robotData.robot_arm_joint) {
-      // 로봇 암 관절 데이터를 적용
       const joints = robotData.robot_arm_joint; // 예: [0, 0.5, -1.2, 0.3, 0.8, -0.5, 1.0]
+      
+      // 각 관절에 대한 회전 값 설정
       if (axisRefs.base.current) axisRefs.base.current.rotation.y = joints[0] || 0;
       if (axisRefs.shoulder.current) axisRefs.shoulder.current.rotation.x = joints[1] || 0;
       if (axisRefs.upperArm.current) axisRefs.upperArm.current.rotation.x = joints[2] || 0;
@@ -85,16 +80,17 @@ function RobotModel({ robotData }) {
 }
 
 function RobotStatusPage() {
-  const [robotData, setRobotData] = useState(null); // 초기 상태 null로 설정
+  const [robotData, setRobotData] = useState({});
+  const [agvData, setAgvData] = useState({});
 
+  // API에서 데이터를 주기적으로 가져오기
   useEffect(() => {
-    // 데이터 fetch 함수
     const fetchData = async () => {
       try {
         const response = await axios.get('/api/robot/data');
-        console.log('Fetched Robot Data:', response.data); // 데이터가 있는지 확인
         if (response.data.success) {
-          setRobotData(response.data.data); // 성공적으로 데이터가 오면 상태 업데이트
+          setRobotData(response.data.data);
+          setAgvData(response.data.data.agv || {});
         } else {
           console.error('Failed to fetch robot/AGV data');
         }
@@ -103,14 +99,11 @@ function RobotStatusPage() {
       }
     };
 
-    // 컴포넌트가 마운트될 때와 주기적으로 데이터를 가져오기
-    fetchData(); // 처음 호출
+    // 1초 간격으로 데이터 업데이트
+    const interval = setInterval(fetchData, 1000);
 
-    const interval = setInterval(fetchData, 1000); // 1초마다 데이터 갱신
-
-    // 컴포넌트 언마운트 시 interval 정리
-    return () => clearInterval(interval);
-  }, []); // 빈 배열을 넣어 컴포넌트가 처음 마운트될 때만 실행되도록 함
+    return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
+  }, []);
 
   return (
     <div className="robot-status-container">
@@ -121,12 +114,14 @@ function RobotStatusPage() {
             <div>Date: {robotData.date || 'N/A'}</div>
             <div>Time: {robotData.time || 'N/A'}</div>
             <div>AGV ID: {robotData.agv || 'N/A'}</div>
-            <div>Robot Arm Joint: {(robotData.robot_arm_joint && robotData.robot_arm_joint.join(', ')) || 'N/A'}</div>
-            <div>Speed: {robotData.otherData && robotData.otherData.speed ? robotData.otherData.speed : 'N/A'}</div>
-            <div>Temperature: {robotData.otherData && robotData.otherData.temperature ? robotData.otherData.temperature : 'N/A'}</div>
+            <div>
+              Robot Arm Joint:{' '}
+              {robotData.robot_arm_joint ? robotData.robot_arm_joint.join(', ') : 'N/A'}
+            </div>
+            <div>Other Data: {JSON.stringify(robotData.otherData) || 'N/A'}</div>
           </div>
         ) : (
-          <div>Loading...</div> // 데이터가 로딩 중일 때 "Loading..." 출력
+          <div>No data available</div>
         )}
       </div>
       <div className="camera-container">
@@ -143,7 +138,7 @@ function RobotStatusPage() {
           <directionalLight position={[10, 10, 5]} intensity={1.0} />
           <Suspense fallback={null}>
             {/* RobotModel에 로봇 데이터를 전달 */}
-            {robotData && <RobotModel robotData={robotData} />}
+            <RobotModel robotData={robotData} />
           </Suspense>
           <OrbitControls />
         </Canvas>
