@@ -6,6 +6,11 @@ import { OrbitControls, useGLTF } from '@react-three/drei';
 function RobotModel({ robotData }) {
   const { scene } = useGLTF('/untitled.glb');
 
+  useEffect(() => {
+    // 모델 로드 시 한 번 콘솔에 scene 요소 출력
+    console.log('Loaded Robot Model Scene:', scene);
+  }, [scene]);
+
   const axisRefs = {
     axis1: useRef(),
     axis2: useRef(),
