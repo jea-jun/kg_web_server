@@ -16,45 +16,54 @@ function RobotModel({ robotData }) {
     gripper: useRef(),
   };
 
+  // 로봇 모델의 각 부품에 접근하여 회전 값을 설정
   useEffect(() => {
-    // 모델이 로드된 후, 각 요소가 참조에 제대로 연결되었는지 확인하는 로그
-    scene.traverse((child) => {
-      if (child.isMesh || child.isBone) {
-        console.log('Connected part:', child.name); // 모델의 각 부품 이름 확인
-        switch (child.name) {
-          case 'base':
-            axisRefs.base.current = child;
-            break;
-          case 'shoulder':
-            axisRefs.shoulder.current = child;
-            break;
-          case 'upper_arm':
-            axisRefs.upperArm.current = child;
-            break;
-          case 'elbow':
-            axisRefs.elbow.current = child;
-            break;
-          case 'forearm':
-            axisRefs.forearm.current = child;
-            break;
-          case 'wrist':
-            axisRefs.wrist.current = child;
-            break;
-          case 'gripper':
-            axisRefs.gripper.current = child;
-            break;
-          default:
-            break;
+    if (scene) {
+      scene.traverse((child) => {
+        if (child.isBone || child.isMesh) {
+          switch (child.name) {
+            case 'base':
+              axisRefs.base.current = child;
+              console.log('Base connected:', axisRefs.base.current);  // 디버깅 로그 추가
+              break;
+            case 'shoulder':
+              axisRefs.shoulder.current = child;
+              console.log('Shoulder connected:', axisRefs.shoulder.current);  // 디버깅 로그 추가
+              break;
+            case 'upper_arm':
+              axisRefs.upperArm.current = child;
+              console.log('UpperArm connected:', axisRefs.upperArm.current);  // 디버깅 로그 추가
+              break;
+            case 'elbow':
+              axisRefs.elbow.current = child;
+              console.log('Elbow connected:', axisRefs.elbow.current);  // 디버깅 로그 추가
+              break;
+            case 'forearm':
+              axisRefs.forearm.current = child;
+              console.log('Forearm connected:', axisRefs.forearm.current);  // 디버깅 로그 추가
+              break;
+            case 'wrist':
+              axisRefs.wrist.current = child;
+              console.log('Wrist connected:', axisRefs.wrist.current);  // 디버깅 로그 추가
+              break;
+            case 'gripper':
+              axisRefs.gripper.current = child;
+              console.log('Gripper connected:', axisRefs.gripper.current);  // 디버깅 로그 추가
+              break;
+            default:
+              break;
+          }
         }
-      }
-    });
+      });
+    }
   }, [scene]);
 
+  // 로봇의 관절 회전 값 업데이트 (매 프레임마다 실행)
   useFrame(() => {
     if (robotData && robotData.robot_arm_joint) {
-      const joints = robotData.robot_arm_joint;
-
-      // 모델의 각 부품에 회전 값 적용
+      const joints = robotData.robot_arm_joint; // 예: [0, 0.5, -1.2, 0.3, 0.8, -0.5, 1.0]
+      
+      // 각 관절에 대한 회전 값 설정
       if (axisRefs.base.current) {
         axisRefs.base.current.rotation.y = joints[0] || 0;
       }
@@ -81,39 +90,28 @@ function RobotModel({ robotData }) {
 
   return (
     <group>
-      <group ref={axisRefs.base}>
-        <group ref={axisRefs.shoulder}>
-          <group ref={axisRefs.upperArm}>
-            <group ref={axisRefs.elbow}>
-              <group ref={axisRefs.forearm}>
-                <group ref={axisRefs.wrist}>
-                  <group ref={axisRefs.gripper}>
-                    <primitive object={scene} />
-                  </group>
-                </group>
-              </group>
-            </group>
-          </group>
-        </group>
-      </group>
+      <primitive object={scene} />
     </group>
   );
 }
 
 function RobotStatusPage() {
-  const [robotData, setRobotData] = useState([]);
+  const [robotData, setRobotData] = useState({});
+  const [agvData, setAgvData] = useState({});
 
+  // API에서 데이터를 주기적으로 가져오기
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get('/api/robot/data');
         if (response.data.success) {
           setRobotData(response.data.data);
+          setAgvData(response.data.data.agv || {});
         } else {
-          console.error('Failed to fetch robot data');
+          console.error('Failed to fetch robot/AGV data');
         }
       } catch (error) {
-        console.error('Error fetching robot data:', error);
+        console.error('Error fetching robot/AGV data:', error);
       }
     };
 
@@ -127,28 +125,19 @@ function RobotStatusPage() {
     <div className="robot-status-container">
       <div className="text-container">
         <h1>Robot Status</h1>
-        {robotData.length > 0 ? (
-          robotData.map((data, index) => (
-            <div key={index}>
-              <div>Date: {data.date || 'N/A'}</div>
-              <div>Time: {data.time || 'N/A'}</div>
-              <div>AGV: {data.agv || 'N/A'}</div>
-              <div>
-                Robot Arm:{' '}
-                {(data.robot_arm_joint && data.robot_arm_joint.join(', ')) || 'N/A'}
-              </div>
-              <div>Other Data: {JSON.stringify(data.otherData) || 'N/A'}</div>
-              <hr />
-            </div>
-          ))
-        ) : (
+        {robotData ? (
           <div>
-            <div>Date: N/A</div>
-            <div>Time: N/A</div>
-            <div>AGV: N/A</div>
-            <div>Robot Arm: N/A</div>
-            <div>Other Data: N/A</div>
+            <div>Date: {robotData.date || 'N/A'}</div>
+            <div>Time: {robotData.time || 'N/A'}</div>
+            <div>AGV ID: {robotData.agv || 'N/A'}</div>
+            <div>
+              Robot Arm Joint:{' '}
+              {robotData.robot_arm_joint ? robotData.robot_arm_joint.join(', ') : 'N/A'}
+            </div>
+            <div>Other Data: {JSON.stringify(robotData.otherData) || 'N/A'}</div>
           </div>
+        ) : (
+          <div>No data available</div>
         )}
       </div>
       <div className="camera-container">
@@ -163,9 +152,9 @@ function RobotStatusPage() {
         <Canvas camera={{ position: [0, 6, 10], fov: 50 }}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1.0} />
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={null}>
             {/* RobotModel에 로봇 데이터를 전달 */}
-            <RobotModel robotData={robotData[0]} />
+            <RobotModel robotData={robotData} />
           </Suspense>
           <OrbitControls />
         </Canvas>
