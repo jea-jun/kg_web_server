@@ -81,6 +81,23 @@ function RobotModel({ robotData }) {
     }
   }, [robotData]); // robotData가 변경될 때마다 회전값 업데이트
 
+  // 첫 로딩 시 애니메이션을 시작하는 훅
+  useEffect(() => {
+    // 애니메이션을 시작할 때 필요한 로직을 작성
+    if (robotData && robotData.robot_arm_joint) {
+      const joints = robotData.robot_arm_joint;
+
+      // 각 관절에 대해 초기 회전값을 애니메이션으로 변경
+      axisRefs.base.current.rotation.y = joints[0] || 0;
+      axisRefs.shoulder.current.rotation.x = joints[1] || 0;
+      axisRefs.upperArm.current.rotation.x = joints[2] || 0;
+      axisRefs.elbow.current.rotation.x = joints[3] || 0;
+      axisRefs.forearm.current.rotation.x = joints[4] || 0;
+      axisRefs.wrist.current.rotation.x = joints[5] || 0;
+      axisRefs.gripper.current.rotation.x = joints[6] || 0;
+    }
+  }, []); // 컴포넌트가 처음 렌더링될 때 한번 실행
+
   return <primitive object={scene} />;
 }
 
