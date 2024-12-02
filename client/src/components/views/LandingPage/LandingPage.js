@@ -86,18 +86,19 @@ function LandingPage() {
 
     const sendDateTimeToServer = (controlNumber) => {
         const { date, time } = selectedDateTime;
-
+    
         if (!date || !time) {
             alert("날짜와 시간을 모두 입력해주세요.");
             return;
         }
-
+    
         const payload = {
             date,
             time,
-            controlNumber, // 제어번호 추가
+            controlNumber, // 제어번호
+            status: true // 예약 상태를 true로 설정
         };
-
+    
         Axios.post('/api/robot/DateTime', payload)
             .then((response) => {
                 if (response.data.success) {
@@ -113,6 +114,7 @@ function LandingPage() {
                 alert("서버 전송 중 오류가 발생했습니다.");
             });
     };
+    
 
     const onLoadMore = () => {
         let skip = Skip + Limit;
