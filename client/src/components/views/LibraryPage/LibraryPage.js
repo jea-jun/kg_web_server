@@ -4,7 +4,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
 function RobotModel({ robotData }) {
-  const { scene } = useGLTF('/robot_model.glb'); // 모델 경로 수정
+  const { scene } = useGLTF('/untitled.glb'); // 모델 경로 수정
 
   // 본(Bone) 참조 설정
   const bones = {
