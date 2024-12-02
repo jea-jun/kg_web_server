@@ -5,7 +5,7 @@ import { OrbitControls, useGLTF } from '@react-three/drei';
 
 function RobotModel({ robotData }) {
   const { scene } = useGLTF('/untitled.glb');
-
+  
   const axisRefs = {
     base: useRef(),
     shoulder: useRef(),
@@ -51,10 +51,10 @@ function RobotModel({ robotData }) {
     }
   }, [scene]);
 
-  // 로봇 데이터가 변경될 때마다 관절 회전 값 업데이트
-  useFrame(() => {
+  // robotData가 바뀔 때마다 관절 회전 값 업데이트
+  useEffect(() => {
     if (robotData && robotData.robot_arm_joint) {
-      const joints = robotData.robot_arm_joint; // 예: [180, 20, 180, 20, 180, 20, 180]
+      const joints = robotData.robot_arm_joint; // 예: [0, 0.5, -1.2, 0.3, 0.8, -0.5, 1.0]
       
       // 각 관절에 대한 회전 값 설정
       if (axisRefs.base.current) {
@@ -79,16 +79,15 @@ function RobotModel({ robotData }) {
         axisRefs.gripper.current.rotation.x = joints[6] || 0;
       }
     }
-  });
+  }, [robotData]); // robotData가 변경될 때마다 회전값 업데이트
 
   return <primitive object={scene} />;
 }
 
 function RobotStatusPage() {
-  const [robotData, setRobotData] = useState({
-    robot_arm_joint: [180, 20, 180, 20, 180, 20, 180], // 초기값 (홀수: 180, 짝수: 20)
-  });
-  const [forceRender, setForceRender] = useState(false); // 리렌더링 강제 트리거용 상태
+  const [robotData, setRobotData] = useState({});
+  const [agvData, setAgvData] = useState({});
+  const [forceRender, setForceRender] = useState(false); // 렌더링 강제 트리거용 상태
 
   // API에서 데이터를 주기적으로 가져오기
   useEffect(() => {
@@ -96,16 +95,17 @@ function RobotStatusPage() {
       try {
         const response = await axios.get('/api/robot/data');
         if (response.data.success) {
-          setRobotData(response.data.data); // 받아온 데이터로 상태 업데이트
+          setRobotData(response.data.data);
+          setAgvData(response.data.data.agv || {});
         } else {
-          console.error('Failed to fetch robot data');
+          console.error('Failed to fetch robot/AGV data');
         }
       } catch (error) {
-        console.error('Error fetching robot data:', error);
+        console.error('Error fetching robot/AGV data:', error);
       }
     };
 
-    // 1초 간격으로 데이터 업데이트 및 강제 리렌더링
+    // 1초 간격으로 데이터 업데이트
     const interval = setInterval(() => {
       fetchData();
       setForceRender(prev => !prev); // 강제 리렌더링을 위해 상태 반전
@@ -113,30 +113,6 @@ function RobotStatusPage() {
 
     return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
   }, []);
-
-  // 임의로 1초마다 값을 고정시켜서 업데이트 (홀수 인덱스는 180, 짝수 인덱스는 20)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRobotData({
-        robot_arm_joint: [
-          180,  // base
-          20,   // shoulder
-          180,  // upper arm
-          20,   // elbow
-          180,  // forearm
-          20,   // wrist
-          180,  // gripper
-        ]
-      });
-    }, 1000);
-
-    return () => clearInterval(interval); // 1초마다 업데이트
-  }, []);
-
-  // robotData가 변경될 때마다 강제로 리렌더링을 위해 콘솔 출력
-  useEffect(() => {
-    console.log('Updated robotData:', robotData);  // 값이 업데이트 되는지 확인
-  }, [robotData]);
 
   return (
     <div className="robot-status-container">
@@ -181,7 +157,7 @@ function RobotStatusPage() {
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1.0} />
           <Suspense fallback={null}>
-            <RobotModel robotData={robotData} key={robotData.robot_arm_joint.join('-')} />
+            <RobotModel robotData={robotData} />
           </Suspense>
           <OrbitControls />
         </Canvas>
