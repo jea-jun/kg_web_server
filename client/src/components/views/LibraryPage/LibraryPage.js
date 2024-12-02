@@ -9,6 +9,15 @@ function RobotModel({ robotData }) {
   useEffect(() => {
     // 모델 로드 시 한 번 콘솔에 scene 요소 출력
     console.log('Loaded Robot Model Scene:', scene);
+
+    // 접근 가능한 요소만 로그로 출력
+    if (scene) {
+      scene.traverse((child) => {
+        if (child.isBone || child.isMesh) {
+          console.log('Accessible Child:', child.name, child);
+        }
+      });
+    }
   }, [scene]);
 
   const axisRefs = {
@@ -64,6 +73,7 @@ function RobotStatusPage() {
     const fetchData = async () => {
       try {
         const response = await axios.get('/api/robot/data');
+        console.log('Fetched Robot Data:', response.data); // 데이터가 있는지 확인
         if (response.data.success) {
           setRobotData(response.data.data);
           setAgvData(response.data.data.agv || {}); // AGV 데이터 추출
