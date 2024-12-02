@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import Axios from 'axios';
 import { Icon, Col, Card, Row } from 'antd';
 import CheckBox from './Sections/CheckBox';
@@ -10,13 +10,12 @@ import './Sections/LandingPage.css';
 const { Meta } = Card;
 
 function LandingPage() {
-    const [Products, setProducts] = useState([])
-    const [Skip, setSkip] = useState(0)
-    const [Limit, setLimit] = useState(8)
-    const [PostSize, setPostSize] = useState()
-    const [SearchTerms, setSearchTerms] = useState("")
+    const [Products, setProducts] = useState([]);
+    const [Skip, setSkip] = useState(0);
+    const [Limit, setLimit] = useState(8);
+    const [PostSize, setPostSize] = useState();
+    const [SearchTerms, setSearchTerms] = useState("");
     const [selectedCard, setSelectedCard] = useState(null);
-    const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
     const [selectedDateTime, setSelectedDateTime] = useState({ date: '', time: '' });
     const [Filters, setFilters] = useState({
         category: [],
@@ -27,14 +26,14 @@ function LandingPage() {
         const variables = {
             pageno: Skip,
             displaylines: Limit,
-        }
+        };
 
-        getProducts(variables)
+        getProducts(variables);
         document.addEventListener('click', handleOutsideClick);
         return () => {
             document.removeEventListener('click', handleOutsideClick);
         };
-    }, [])
+    }, []);
 
     const getProducts = (variables) => {
         Axios.get('/api/book/getBooks', { params: variables })
@@ -124,10 +123,10 @@ function LandingPage() {
             loadMore: true,
             filters: Filters,
             searchTerm: SearchTerms
-        }
-        getProducts(variables)
-        setSkip(skip)
-    }
+        };
+        getProducts(variables);
+        setSkip(skip);
+    };
 
     // 외부 클릭 감지 핸들러
     const handleOutsideClick = (e) => {
@@ -159,7 +158,7 @@ function LandingPage() {
                         }
                     />
 
-                    {/* 시간 선택창 */}
+                    {/* 예약 폼 */}
                     {selectedCard === index && (
                         <div
                             className="time-picker-container"
@@ -171,7 +170,7 @@ function LandingPage() {
                                     type="date"
                                     value={selectedDateTime.date || ''}
                                     onChange={(e) => {
-                                        const value = e.target.value; // 즉시 값 저장
+                                        const value = e.target.value;
                                         setSelectedDateTime((prev) => ({
                                             ...prev,
                                             date: value,
@@ -186,7 +185,7 @@ function LandingPage() {
                                     type="time"
                                     value={selectedDateTime.time || ''}
                                     onChange={(e) => {
-                                        const value = e.target.value; // 즉시 값 저장
+                                        const value = e.target.value;
                                         setSelectedDateTime((prev) => ({
                                             ...prev,
                                             time: value,
@@ -221,10 +220,10 @@ function LandingPage() {
             skip: 0,
             limit: Limit,
             filters: filters
-        }
-        getProducts(variables)
-        setSkip(0)
-    }
+        };
+        getProducts(variables);
+        setSkip(0);
+    };
 
     const handledecadeRanges = (value) => {
         const data = decadeRanges;
@@ -236,39 +235,39 @@ function LandingPage() {
             }
         }
         return array;
-    }
+    };
 
     const handleFilters = (filters, category) => {
-        const newFilters = { ...Filters }
+        const newFilters = { ...Filters };
 
-        newFilters[category] = filters
+        newFilters[category] = filters;
 
         if (category === "decadeRanges") {
-            let decadeRangesValues = handledecadeRanges(filters)
-            newFilters[category] = decadeRangesValues
+            let decadeRangesValues = handledecadeRanges(filters);
+            newFilters[category] = decadeRangesValues;
         }
 
-        showFilteredResults(newFilters)
-        setFilters(newFilters)
-    }
+        showFilteredResults(newFilters);
+        setFilters(newFilters);
+    };
 
     const updateSearchTerms = (newSearchTerm) => {
         const variables = {
             pageno: 1,
             displaylines: 12,
             search: `${category[Filters.category].name}, ${newSearchTerm}`
-        }
+        };
 
-        setSkip(0)
-        setSearchTerms(newSearchTerm)
+        setSkip(0);
+        setSearchTerms(newSearchTerm);
 
-        getProducts(variables)
-    }
+        getProducts(variables);
+    };
 
     return (
         <div style={{ width: '75%', margin: '3rem auto' }}>
             <div style={{ textAlign: 'center' }}>
-                <h2> 지식의 공간 <Icon type="rocket" />  </h2>
+                <h2> 지식의 공간 <Icon type="rocket" /> </h2>
             </div>
 
             {/* Search  */}
@@ -281,7 +280,7 @@ function LandingPage() {
             {/* Filter  */}
             <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem auto' }}>
                 <Row gutter={[16, 16]}>
-                    <Col lg={12} xs={24} >
+                    <Col lg={12} xs={24}>
                         <CheckBox
                             list={category}
                             handleFilters={filters => handleFilters(filters, "category")}
@@ -314,7 +313,7 @@ function LandingPage() {
                 </div>
             }
         </div>
-    )
+    );
 }
 
 export default LandingPage;
