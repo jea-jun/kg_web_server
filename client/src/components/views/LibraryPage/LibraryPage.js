@@ -4,7 +4,8 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
 function RobotModel({ robotData }) {
-  const { scene } = useGLTF('/untitled.glb'); // 모델 경로 수정
+  // GLTF 모델 로드
+  const { nodes, scene } = useGLTF('/untitled.glb'); // 모델 경로 수정
 
   // 본(Bone) 참조 설정
   const bones = {
@@ -36,7 +37,6 @@ function RobotModel({ robotData }) {
 
 function RobotStatusPage() {
   const [robotData, setRobotData] = useState(null);
-  const [agvData, setAgvData] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +45,6 @@ function RobotStatusPage() {
         if (response.data.success) {
           console.log('Fetched Data:', response.data.data);
           setRobotData(response.data.data);
-          setAgvData(response.data.data.agv || {});
         } else {
           console.error('Failed to fetch robot/AGV data');
         }
@@ -74,7 +73,6 @@ function RobotStatusPage() {
               {(robotData.robot_arm_joint && robotData.robot_arm_joint.join(', ')) || 'N/A'}
             </div>
             <div>Other Data: {JSON.stringify(robotData.otherData) || 'N/A'}</div>
-            <hr />
           </div>
         ) : (
           <div>
@@ -85,12 +83,6 @@ function RobotStatusPage() {
             <div>Other Data: N/A</div>
           </div>
         )}
-      </div>
-      <div className="camera-container">
-        <h1>Camera View</h1>
-        <div className="camera-feed">
-          <img src="/path/to/camera/feed" alt="Camera Feed" />
-        </div>
       </div>
       <div className="blender-model-container">
         <h1>3D Robot Model</h1>
