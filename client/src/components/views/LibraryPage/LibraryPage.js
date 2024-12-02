@@ -3,9 +3,8 @@ import axios from 'axios';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
-function RobotModel({ robotData }) {
+function RobotModel({ robotData, position }) {
   const { scene } = useGLTF('/untitled.glb');
-  
   const axisRefs = {
     base: useRef(),
     shoulder: useRef(),
@@ -16,7 +15,6 @@ function RobotModel({ robotData }) {
     gripper: useRef(),
   };
 
-  // 로봇 모델의 각 부품에 접근하여 회전 값을 설정
   useEffect(() => {
     if (scene) {
       scene.traverse((child) => {
@@ -51,48 +49,32 @@ function RobotModel({ robotData }) {
     }
   }, [scene]);
 
-  // robotData가 바뀔 때마다 관절 회전 값 업데이트
   useEffect(() => {
     if (robotData && robotData.robot_arm_joint) {
-      const joints = robotData.robot_arm_joint; // 예: [0, 0.5, -1.2, 0.3, 0.8, -0.5, 1.0]
-      
-      // 각 관절에 대한 회전 값 설정
-      if (axisRefs.base.current) {
-        axisRefs.base.current.rotation.y = joints[0] || 0;
-      }
-      if (axisRefs.shoulder.current) {
-        axisRefs.shoulder.current.rotation.x = joints[1] || 0;
-      }
-      if (axisRefs.upperArm.current) {
-        axisRefs.upperArm.current.rotation.x = joints[2] || 0;
-      }
-      if (axisRefs.elbow.current) {
-        axisRefs.elbow.current.rotation.x = joints[3] || 0;
-      }
-      if (axisRefs.forearm.current) {
-        axisRefs.forearm.current.rotation.x = joints[4] || 0;
-      }
-      if (axisRefs.wrist.current) {
-        axisRefs.wrist.current.rotation.x = joints[5] || 0;
-      }
-      if (axisRefs.gripper.current) {
-        axisRefs.gripper.current.rotation.x = joints[6] || 0;
-      }
+      const joints = robotData.robot_arm_joint;
+      if (axisRefs.base.current) axisRefs.base.current.rotation.y = joints[0] || 0;
+      if (axisRefs.shoulder.current) axisRefs.shoulder.current.rotation.x = joints[1] || 0;
+      if (axisRefs.upperArm.current) axisRefs.upperArm.current.rotation.x = joints[2] || 0;
+      if (axisRefs.elbow.current) axisRefs.elbow.current.rotation.x = joints[3] || 0;
+      if (axisRefs.forearm.current) axisRefs.forearm.current.rotation.x = joints[4] || 0;
+      if (axisRefs.wrist.current) axisRefs.wrist.current.rotation.x = joints[5] || 0;
+      if (axisRefs.gripper.current) axisRefs.gripper.current.rotation.x = joints[6] || 0;
     }
-  }, [robotData]); // robotData가 변경될 때마다 회전값 업데이트
+  }, [robotData]);
 
-  return <primitive object={scene} />;
+  return <primitive object={scene} position={position} />;
 }
 
 function RobotStatusPage() {
   const [robotData, setRobotData] = useState({});
   const [agvData, setAgvData] = useState({});
-  const [forceRender, setForceRender] = useState(false); // 렌더링 강제 트리거용 상태
-
-  // 로봇의 위치를 agv_position으로 설정하기 위한 상태
+  const [forceRender, setForceRender] = useState(false);
   const [position, setPosition] = useState([0, 0, 0]);
+  
+  // Form data for robot arm joint and AGV
+  const [agv, setAgv] = useState('');
+  const [robotArm, setRobotArm] = useState(Array(7).fill(0));
 
-  // API에서 데이터를 주기적으로 가져오기
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -100,10 +82,8 @@ function RobotStatusPage() {
         if (response.data.success) {
           setRobotData(response.data.data);
           setAgvData(response.data.data.agv || {});
-          
-          // agv_position으로 모델 위치 설정
           if (response.data.data.agv && response.data.data.agv.agv_position) {
-            setPosition(response.data.data.agv.agv_position); // [x, y, z] 형태
+            setPosition(response.data.data.agv.agv_position);
           }
         } else {
           console.error('Failed to fetch robot/AGV data');
@@ -113,14 +93,31 @@ function RobotStatusPage() {
       }
     };
 
-    // 1초 간격으로 데이터 업데이트
     const interval = setInterval(() => {
       fetchData();
-      setForceRender(prev => !prev); // 강제 리렌더링을 위해 상태 반전
+      setForceRender(prev => !prev);
     }, 1000);
 
-    return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
+    return () => clearInterval(interval);
   }, []);
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('/robot-control', {
+        agv,
+        robot_arm: robotArm,
+      });
+      if (response.data.success) {
+        console.log('Data sent successfully:', response.data);
+      } else {
+        console.error('Failed to send data:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error sending data:', error);
+    }
+  };
 
   return (
     <div className="robot-status-container">
@@ -142,7 +139,39 @@ function RobotStatusPage() {
         )}
       </div>
 
-      {/* 카메라 피드 렌더링 */}
+      <div className="input-container">
+        <h2>Control Robot Arm and AGV</h2>
+        <form onSubmit={handleFormSubmit}>
+          <div>
+            <label>AGV ID: </label>
+            <input
+              type="text"
+              value={agv}
+              onChange={(e) => setAgv(e.target.value)}
+              placeholder="Enter AGV ID"
+            />
+          </div>
+          <div>
+            <label>Robot Arm Joint Angles:</label>
+            {robotArm.map((angle, index) => (
+              <div key={index}>
+                <label>{`Joint ${index + 1}: `}</label>
+                <input
+                  type="number"
+                  value={angle}
+                  onChange={(e) => {
+                    const newRobotArm = [...robotArm];
+                    newRobotArm[index] = parseFloat(e.target.value);
+                    setRobotArm(newRobotArm);
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+          <button type="submit">Send Data</button>
+        </form>
+      </div>
+
       <div className="camera-container">
         <h1>Camera View</h1>
         {robotData.camera ? (
@@ -158,14 +187,12 @@ function RobotStatusPage() {
         )}
       </div>
 
-      {/* 3D 로봇 모델 */}
       <div className="blender-model-container">
         <h1>3D Robot Model</h1>
         <Canvas camera={{ position: [0, 6, 10], fov: 50 }}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1.0} />
           <Suspense fallback={null}>
-            {/* 로봇 모델을 지정된 위치로 렌더링 */}
             <RobotModel robotData={robotData} position={position} />
           </Suspense>
           <OrbitControls />

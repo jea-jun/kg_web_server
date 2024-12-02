@@ -55,10 +55,11 @@ router.post('/robot-control', (req, res) => {
 
     const newData = {
         ...(validatedAgv && { agv: validatedAgv }),
-        ...(validatedRobotArm && { robot_arm: validatedRobotArm }), 
-        ...otherData 
+        ...(validatedRobotArm && { robot_arm: validatedRobotArm }),
+        ...otherData
     };
-    receivedData = { ...receivedData, ...newData }; // 데이터를 덮어쓰기
+
+    receivedData = { ...receivedData, ...newData }; // 데이터 덮어쓰기
 
     res.status(200).json({
         success: true,
@@ -66,6 +67,7 @@ router.post('/robot-control', (req, res) => {
         data: newData
     });
 });
+
 
 router.post('/robot-status', (req, res) => {
     const { agv, robot_arm, ...otherData } = req.body;
