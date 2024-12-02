@@ -153,5 +153,3 @@ function RobotStatusPage() {
 }
 
 export default RobotStatusPage;
-
-
