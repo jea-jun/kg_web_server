@@ -4,7 +4,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
 function RobotModel({ robotData }) {
-  const { scene } = useGLTF('/untitled.glb');
+  const { scene } = useGLTF('/untitled.glb'); // GLTF 모델 로드
 
   const axisRefs = {
     base: useRef(),
@@ -55,7 +55,7 @@ function RobotModel({ robotData }) {
   useFrame(() => {
     if (robotData && robotData.robot_arm_joint) {
       const joints = robotData.robot_arm_joint; // 예: [0, 0.5, -1.2, 0.3, 0.8, -0.5, 1.0]
-      
+
       // 각 관절에 대한 회전 값 설정
       if (axisRefs.base.current) {
         axisRefs.base.current.rotation.y = joints[0] || 0;
@@ -78,6 +78,13 @@ function RobotModel({ robotData }) {
       if (axisRefs.gripper.current) {
         axisRefs.gripper.current.rotation.x = joints[6] || 0;
       }
+
+      // 변형을 업데이트하도록 SkinnedMesh가 있다면 matrixWorld 업데이트
+      scene.traverse((child) => {
+        if (child.isSkinnedMesh) {
+          child.updateMatrixWorld(true);
+        }
+      });
     }
   });
 
@@ -157,7 +164,7 @@ function RobotStatusPage() {
         <Canvas camera={{ position: [0, 6, 10], fov: 50 }}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1.0} />
-          <Suspense fallback={null}>
+          <Suspense fallback={<div>Loading model...</div>}>
             {/* RobotModel에 로봇 데이터를 전달 */}
             <RobotModel robotData={robotData} />
           </Suspense>
