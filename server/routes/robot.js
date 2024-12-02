@@ -1,49 +1,50 @@
 const express = require("express");
 const router = express.Router();
 
-let receivedData = {}; // 배열 대신 객체로 변경
+let receivedData = {};  // 데이터를 제어번호별로 저장하기 위해 객체 사용
 
-// 날짜와 시간 저장
+// 날짜와 시간 및 예약 상태 저장
 router.post('/datetime', (req, res) => {
-    const { date, time, controlNumber } = req.body;
+    const { date, time, reservationInfo } = req.body;
 
-    let validatedDate = null;
-    if (date) {
-        validatedDate = date; 
+    // reservationInfo에서 controlNumber와 isReserved를 받음
+    const { controlNumber, isReserved } = reservationInfo || {};
+
+    // 유효성 검사
+    if (!date || !time || !controlNumber) {
+        return res.status(400).json({ success: false, message: '날짜, 시간, 제어번호는 필수 항목입니다.' });
     }
 
-    let validatedTime = null;
-    if (time) {
-        validatedTime = time; 
+    // isReserved가 없으면 기본값으로 false 설정
+    const reservationStatus = typeof isReserved === 'boolean' ? isReserved : false;
+
+    // 제어번호에 해당하는 데이터가 이미 존재하는지 확인
+    if (receivedData[controlNumber] && receivedData[controlNumber].reservationInfo.isReserved) {
+        return res.status(400).json({ success: false, message: '이 제어번호는 이미 예약되었습니다.' });
     }
 
-    let validatedControlNumber = null;
-    if (controlNumber) {
-        validatedControlNumber = controlNumber;
-    }
-
-    // 제어번호와 예약 상태 추가
-    const newData = {
-        ...(validatedDate && { date: validatedDate }),
-        ...(validatedTime && { time: validatedTime }),
-        ...(validatedControlNumber && { controlNumber: validatedControlNumber }),
-        isReserved: false // 기본값은 false로 설정
+    // 제어번호에 해당하는 데이터를 저장 (제어번호를 키로 사용)
+    receivedData[controlNumber] = {
+        reservationInfo: {
+            controlNumber,
+            isReserved: reservationStatus
+        },
+        date,
+        time
     };
-
-    // 기존의 데이터와 병합
-    receivedData = { ...receivedData, ...newData }; 
 
     res.status(200).json({
         success: true,
-        message: 'Date, time, and control number received and stored successfully.',
-        data: newData
-    }); 
+        message: 'Date, time, and control number with reservation status received and stored successfully.',
+        data: receivedData[controlNumber]
+    });
 });
 
 // 로봇 제어 데이터 저장
 router.post('/robot-control', (req, res) => {
     const { agv, robot_arm, ...otherData } = req.body;
 
+    // AGV 및 로봇 팔 유효성 검사
     let validatedAgv = null;
     if (agv) {
         if (typeof agv === 'string') {
@@ -65,12 +66,15 @@ router.post('/robot-control', (req, res) => {
         }
     }
 
+    // 새로운 로봇 제어 데이터
     const newData = {
         ...(validatedAgv && { agv: validatedAgv }),
         ...(validatedRobotArm && { robot_arm: validatedRobotArm }), 
         ...otherData 
     };
-    receivedData = { ...receivedData, ...newData }; // 데이터를 덮어쓰기
+
+    // 데이터 저장
+    receivedData = { ...receivedData, ...newData }; 
 
     res.status(200).json({
         success: true,
@@ -83,6 +87,7 @@ router.post('/robot-control', (req, res) => {
 router.post('/robot-status', (req, res) => {
     const { agv, robot_arm, ...otherData } = req.body;
 
+    // AGV 및 로봇 팔 유효성 검사
     let validatedAgv = null;
     if (agv) {
         if (typeof agv === 'string') {
@@ -104,12 +109,15 @@ router.post('/robot-status', (req, res) => {
         }
     }
 
+    // 새로운 로봇 상태 데이터
     const newData = {
         ...(validatedAgv && { agv: validatedAgv }),  
         ...(validatedRobotArm && { robot_arm: validatedRobotArm }), 
         ...otherData 
     };
-    receivedData = { ...receivedData, ...newData }; // 데이터를 덮어쓰기
+
+    // 데이터 저장
+    receivedData = { ...receivedData, ...newData }; 
 
     res.status(200).json({
         success: true,
@@ -129,10 +137,7 @@ router.get('/check-reservation', (req, res) => {
         res.status(200).json({
             success: true,
             message: 'Reservation status retrieved successfully.',
-            data: {
-                controlNumber,
-                isReserved: reservationData.isReserved
-            }
+            data: reservationData.reservationInfo
         });
     } else {
         res.status(404).json({

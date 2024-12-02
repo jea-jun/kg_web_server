@@ -21,6 +21,7 @@ function LandingPage() {
         category: [],
         decadeRanges: []
     });
+    const [reservationStatus, setReservationStatus] = useState({}); // 예약 상태 관리
 
     useEffect(() => {
         const variables = {
@@ -34,6 +35,23 @@ function LandingPage() {
             document.removeEventListener('click', handleOutsideClick);
         };
     }, []);
+
+    // 예약 상태 확인 함수
+    const checkReservationStatus = (controlNumber) => {
+        Axios.get(`/api/robot/data`, { params: { controlNumber } })
+            .then(response => {
+                if (response.data && response.data.reservationInfo) {
+                    const { isReserved } = response.data.reservationInfo;
+                    setReservationStatus(prevState => ({
+                        ...prevState,
+                        [controlNumber]: isReserved
+                    }));
+                }
+            })
+            .catch(error => {
+                console.error("예약 상태 확인 오류:", error.message || error);
+            });
+    };
 
     const getProducts = (variables) => {
         Axios.get('/api/book/getBooks', { params: variables })
@@ -68,6 +86,10 @@ function LandingPage() {
                             };
                         });
                         setProducts(products);
+                        // 제품마다 예약 상태 확인
+                        products.forEach(product => {
+                            checkReservationStatus(product.controlNumber);
+                        });
                     } else {
                         console.error("No records found in the XML response");
                         setProducts([]);
@@ -93,10 +115,12 @@ function LandingPage() {
         }
     
         const payload = {
+            reservationInfo: {
+                controlNumber, // 제어번호
+                isReserved: true // 예약 상태
+            },
             date,
-            time,
-            controlNumber, // 제어번호
-            status: true // 예약 상태를 true로 설정
+            time
         };
     
         Axios.post('/api/robot/DateTime', payload)
@@ -104,6 +128,10 @@ function LandingPage() {
                 if (response.data.success) {
                     console.log("DateTime sent successfully:", response.data);
                     alert("날짜와 시간이 성공적으로 전송되었습니다.");
+                    setReservationStatus(prevState => ({
+                        ...prevState,
+                        [controlNumber]: true, // 예약 완료 시 해당 제어번호에 대해 예약 상태 업데이트
+                    }));
                 } else {
                     console.error("Failed to send DateTime:", response.data.message);
                     alert("전송에 실패했습니다.");
@@ -114,7 +142,6 @@ function LandingPage() {
                 alert("서버 전송 중 오류가 발생했습니다.");
             });
     };
-    
 
     const onLoadMore = () => {
         let skip = Skip + Limit;
@@ -161,7 +188,7 @@ function LandingPage() {
                     />
 
                     {/* 예약 폼 */}
-                    {selectedCard === index && (
+                    {selectedCard === index && !reservationStatus[product.controlNumber] && ( // 예약되지 않은 경우에만 폼 표시
                         <div
                             className="time-picker-container"
                             onClick={(e) => e.stopPropagation()} // 부모로 이벤트 전파 방지
