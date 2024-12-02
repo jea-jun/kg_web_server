@@ -25,10 +25,10 @@
 도서관 회원이 웹 애플리케이션에 접속하여 도서를 예약하면 서버가 해당 도서의 예약 가능 여부를 확인합니다. 예약이 가능한 경우, **로봇에게 최소한의 데이터를 전달**하여 예약 절차를 진행하게 되며, 이때 로봇은 도서관 내에서 지정된 위치로 이동하여 작업을 수행합니다. 
 ![Alt text](https://github.com/jujujaejun/kg_web_server/blob/main/home.png?raw=true)
 ![Alt text](https://github.com/jujujaejun/kg_web_server/blob/main/reservation.png?raw=true)
-![Alt text](https://github.com/jujujaejun/kg_web_server/blob/main/assets/send.png?raw=true)
+![Alt text](https://github.com/jujujaejun/kg_web_server/blob/main/send.png?raw=true)
 
 실시간 데이터는 로봇의 **카메라**와 **위치 센서**를 통해 서버로 전송되며, 웹 페이지에서는 이러한 데이터를 **3D 모델을 활용한 시각적 랜더링**을 통해 사용자가 직관적으로 확인할 수 있습니다.
-![Alt text](https://github.com/jujujaejun/kg_web_server/blob/main/assets/send.png?raw=true)
+![Alt text](https://github.com/jujujaejun/kg_web_server/blob/main/robot.png?raw=true)
 
 ## 주요 기술 설명
 - **React**: 사용자가 쉽게 도서를 예약하고, 로봇의 상태를 시각적으로 확인할 수 있도록 프론트엔드를 구현했습니다.
